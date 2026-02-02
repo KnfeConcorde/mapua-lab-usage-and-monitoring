@@ -1,0 +1,140 @@
+.pie-chart-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.line-chart-wrapper {
+  width: 100%;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #f0fdf4 100%);
+  border-radius: 8px;
+  border: 1px solid #dbeafe;
+}
+
+.dark-mode .line-chart-wrapper {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(30, 41, 59, 0.3) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.line-chart-wrapper h3 {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+}
+
+.pie-chart-wrapper {
+  width: 100%;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f5f3ff 0%, #fef3c7 100%);
+  border-radius: 8px;
+  border: 1px solid #ede9fe;
+}
+
+.dark-mode .pie-chart-wrapper {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(30, 41, 59, 0.3) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.pie-chart-wrapper h3 {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+}
+
+.pie-chart-container svg {
+  margin: 0 auto;
+}
+
+.recharts-wrapper {
+  margin: 1rem auto;
+}
+
+.recharts-pie-text {
+  font-size: 12px;
+  fill: var(--text-primary);
+  font-weight: 600;
+}
+
+.recharts-legend-wrapper {
+  padding: 1rem 0 !important;
+}
+
+.recharts-legend-item-text {
+  color: var(--text-secondary) !important;
+  font-weight: 500 !important;
+}
+
+.recharts-cartesian-axis-tick text {
+  fill: var(--text-secondary);
+}
+
+.recharts-tooltip-wrapper {
+  outline: none;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  background: var(--border-color);
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.stat-color {
+  width: 4px;
+  height: 40px;
+  border-radius: 4px;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin: 0;
+}
+
+.stat-value {
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  font-weight: 700;
+  margin: 0.25rem 0 0 0;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recharts-pie-text {
+    font-size: 10px;
+  }
+
+  .line-chart-wrapper h3,
+  .pie-chart-wrapper h3 {
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,3940 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+================================================================
+File Summary
+================================================================
+
+Purpose:
+--------
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+
+File Format:
+------------
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  a. A separator line (================)
+  b. The file path (File: path/to/file)
+  c. Another separator line
+  d. The full contents of the file
+  e. A blank line
+
+Usage Guidelines:
+-----------------
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+
+Notes:
+------
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+
+
+================================================================
+Directory Structure
+================================================================
+.gitignore
+client/index.html
+client/package.json
+client/src/App.css
+client/src/App.jsx
+client/src/assets/react.svg
+client/src/components/assets/darklight.png
+client/src/components/assets/mapua univ.png
+client/src/components/LibraryAdminDashboard.css
+client/src/components/LibraryAdminDashboard.jsx
+client/src/components/PieChartAnalytics.css
+client/src/components/PieChartAnalytics.jsx
+client/src/components/StudentDailyEntries.css
+client/src/components/StudentDailyEntries.jsx
+client/src/Dashboard.jsx
+client/src/index.css
+client/src/Login.jsx
+client/src/main.jsx
+client/src/styles.css
+client/src/utils/excelExport.js
+client/vite.config.js
+data/AcadYearDatasheet.xlsx
+data/AdminAccounts.xlsx
+data/CurrentLogDatasheet.xlsx
+README.md
+server/db.json
+server/index.js
+server/package.json
+
+================================================================
+Files
+================================================================
+
+================
+File: .gitignore
+================
+node_modules/
+dist/
+.env
+.DS_Store
+/server/node_modules/
+/client/node_modules/
+uploads/
+*.log
+
+================
+File: client/index.html
+================
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mapua Lab Client</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+
+================
+File: client/package.json
+================
+{
+  "name": "mapua-client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.13.0",
+    "recharts": "^3.7.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "vite": "^5.0.0"
+  }
+}
+
+================
+File: client/src/App.css
+================
+/* Main App Styles */
+body {
+  background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+  min-height: 100vh;
+}
+
+================
+File: client/src/App.jsx
+================
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import LibraryAdminDashboard from './components/LibraryAdminDashboard';
+
+function FileUploadPage() {
+  const [file, setFile] = useState(null);
+  const [result, setResult] = useState(null);
+
+  async function handleUpload(e) {
+    e.preventDefault();
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('http://localhost:5000/api/upload', {
+      method: 'POST',
+      body: fd
+    });
+    const data = await res.json();
+    setResult(data);
+  }
+
+  async function fetchData() {
+    const res = await fetch('http://localhost:5000/api/data');
+    const data = await res.json();
+    setResult(data);
+  }
+
+  return (
+    <div className="app">
+      <h1>Mapua Lab — Upload XLSX</h1>
+      <form onSubmit={handleUpload}>
+        <input type="file" accept=".xlsx,.xls" onChange={e => setFile(e.target.files[0])} />
+        <button type="submit">Upload</button>
+      </form>
+      <hr />
+      <button onClick={fetchData}>Load Stored Data</button>
+      <pre className="output">{result ? JSON.stringify(result, null, 2) : 'No result yet'}</pre>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <nav>
+        <ul>
+          <li>
+            <Link to="/">Upload XLSX</Link>
+          </li>
+          <li>
+            <Link to="/dashboard">Dashboard</Link>
+          </li>
+        </ul>
+      </nav>
+      <Routes>
+        <Route path="/" element={<FileUploadPage />} />
+        <Route path="/dashboard" element={<LibraryAdminDashboard />} />
+      </Routes>
+    </Router>
+  );
+}
+
+================
+File: client/src/assets/react.svg
+================
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="35.93" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228"><path fill="#00D8FF" d="M210.483 73.824a171.49 171.49 0 0 0-8.24-2.597c.465-1.9.893-3.777 1.273-5.621c6.238-30.281 2.16-54.676-11.769-62.708c-13.355-7.7-35.196.329-57.254 19.526a171.23 171.23 0 0 0-6.375 5.848a155.866 155.866 0 0 0-4.241-3.917C100.759 3.829 77.587-4.822 63.673 3.233C50.33 10.957 46.379 33.89 51.995 62.588a170.974 170.974 0 0 0 1.892 8.48c-3.28.932-6.445 1.924-9.474 2.98C17.309 83.498 0 98.307 0 113.668c0 15.865 18.582 31.778 46.812 41.427a145.52 145.52 0 0 0 6.921 2.165a167.467 167.467 0 0 0-2.01 9.138c-5.354 28.2-1.173 50.591 12.134 58.266c13.744 7.926 36.812-.22 59.273-19.855a145.567 145.567 0 0 0 5.342-4.923a168.064 168.064 0 0 0 6.92 6.314c21.758 18.722 43.246 26.282 56.54 18.586c13.731-7.949 18.194-32.003 12.4-61.268a145.016 145.016 0 0 0-1.535-6.842c1.62-.48 3.21-.974 4.76-1.488c29.348-9.723 48.443-25.443 48.443-41.52c0-15.417-17.868-30.326-45.517-39.844Zm-6.365 70.984c-1.4.463-2.836.91-4.3 1.345c-3.24-10.257-7.612-21.163-12.963-32.432c5.106-11 9.31-21.767 12.459-31.957c2.619.758 5.16 1.557 7.61 2.4c23.69 8.156 38.14 20.213 38.14 29.504c0 9.896-15.606 22.743-40.946 31.14Zm-10.514 20.834c2.562 12.94 2.927 24.64 1.23 33.787c-1.524 8.219-4.59 13.698-8.382 15.893c-8.067 4.67-25.32-1.4-43.927-17.412a156.726 156.726 0 0 1-6.437-5.87c7.214-7.889 14.423-17.06 21.459-27.246c12.376-1.098 24.068-2.894 34.671-5.345a134.17 134.17 0 0 1 1.386 6.193ZM87.276 214.515c-7.882 2.783-14.16 2.863-17.955.675c-8.075-4.657-11.432-22.636-6.853-46.752a156.923 156.923 0 0 1 1.869-8.499c10.486 2.32 22.093 3.988 34.498 4.994c7.084 9.967 14.501 19.128 21.976 27.15a134.668 134.668 0 0 1-4.877 4.492c-9.933 8.682-19.886 14.842-28.658 17.94ZM50.35 144.747c-12.483-4.267-22.792-9.812-29.858-15.863c-6.35-5.437-9.555-10.836-9.555-15.216c0-9.322 13.897-21.212 37.076-29.293c2.813-.98 5.757-1.905 8.812-2.773c3.204 10.42 7.406 21.315 12.477 32.332c-5.137 11.18-9.399 22.249-12.634 32.792a134.718 134.718 0 0 1-6.318-1.979Zm12.378-84.26c-4.811-24.587-1.616-43.134 6.425-47.789c8.564-4.958 27.502 2.111 47.463 19.835a144.318 144.318 0 0 1 3.841 3.545c-7.438 7.987-14.787 17.08-21.808 26.988c-12.04 1.116-23.565 2.908-34.161 5.309a160.342 160.342 0 0 1-1.76-7.887Zm110.427 27.268a347.8 347.8 0 0 0-7.785-12.803c8.168 1.033 15.994 2.404 23.343 4.08c-2.206 7.072-4.956 14.465-8.193 22.045a381.151 381.151 0 0 0-7.365-13.322Zm-45.032-43.861c5.044 5.465 10.096 11.566 15.065 18.186a322.04 322.04 0 0 0-30.257-.006c4.974-6.559 10.069-12.652 15.192-18.18ZM82.802 87.83a323.167 323.167 0 0 0-7.227 13.238c-3.184-7.553-5.909-14.98-8.134-22.152c7.304-1.634 15.093-2.97 23.209-3.984a321.524 321.524 0 0 0-7.848 12.897Zm8.081 65.352c-8.385-.936-16.291-2.203-23.593-3.793c2.26-7.3 5.045-14.885 8.298-22.6a321.187 321.187 0 0 0 7.257 13.246c2.594 4.48 5.28 8.868 8.038 13.147Zm37.542 31.03c-5.184-5.592-10.354-11.779-15.403-18.433c4.902.192 9.899.29 14.978.29c5.218 0 10.376-.117 15.453-.343c-4.985 6.774-10.018 12.97-15.028 18.486Zm52.198-57.817c3.422 7.8 6.306 15.345 8.596 22.52c-7.422 1.694-15.436 3.058-23.88 4.071a382.417 382.417 0 0 0 7.859-13.026a347.403 347.403 0 0 0 7.425-13.565Zm-16.898 8.101a358.557 358.557 0 0 1-12.281 19.815a329.4 329.4 0 0 1-23.444.823c-7.967 0-15.716-.248-23.178-.732a310.202 310.202 0 0 1-12.513-19.846h.001a307.41 307.41 0 0 1-10.923-20.627a310.278 310.278 0 0 1 10.89-20.637l-.001.001a307.318 307.318 0 0 1 12.413-19.761c7.613-.576 15.42-.876 23.31-.876H128c7.926 0 15.743.303 23.354.883a329.357 329.357 0 0 1 12.335 19.695a358.489 358.489 0 0 1 11.036 20.54a329.472 329.472 0 0 1-11 20.722Zm22.56-122.124c8.572 4.944 11.906 24.881 6.52 51.026c-.344 1.668-.73 3.367-1.15 5.09c-10.622-2.452-22.155-4.275-34.23-5.408c-7.034-10.017-14.323-19.124-21.64-27.008a160.789 160.789 0 0 1 5.888-5.4c18.9-16.447 36.564-22.941 44.612-18.3ZM128 90.808c12.625 0 22.86 10.235 22.86 22.86s-10.235 22.86-22.86 22.86s-22.86-10.235-22.86-22.86s10.235-22.86 22.86-22.86Z"></path></svg>
+
+================
+File: client/src/components/LibraryAdminDashboard.css
+================
+:root {
+  --bg-primary: #f5f7fa;
+  --bg-secondary: #ffffff;
+  --bg-gradient-start: #f5f7fa;
+  --bg-gradient-end: #e9ecef;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --border-color: #e5e7eb;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-container.dark-mode {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-gradient-start: #0f172a;
+  --bg-gradient-end: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --border-color: #475569;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: slideDown 0.6s ease-out;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.dashboard-header h1 {
+  font-size: 2.5rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.header-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-align: left;
+  margin: 0;
+}
+
+.dark-mode-toggle {
+  padding: 0.5rem;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dark-mode-toggle:hover {
+  background: var(--border-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.dark-mode-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.header-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.85rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.logout-svg {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+}
+
+.dashboard-container.dark-mode .logout-btn {
+  background: #b91c1c;
+}
+
+.dashboard-container.dark-mode .logout-btn:hover {
+  background: #991b1b;
+}
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.dashboard-left,
+.dashboard-right {
+  display: flex;
+  flex-direction: column;
+}
+
+.analytics-card,
+.entries-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+}
+
+.analytics-card:hover,
+.entries-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.analytics-card h2,
+.entries-card h2 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.entries-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.entries-header h2 {
+  margin: 0;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.date-dropdown,
+.program-dropdown {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.date-dropdown:hover,
+.program-dropdown:hover {
+  border-color: #3b82f6;
+  background: var(--bg-tertiary);
+}
+
+.date-dropdown:focus,
+.program-dropdown:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.date-dropdown option,
+.program-dropdown option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 0.5rem;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tab-btn {
+  padding: 0.5rem 1.2rem;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.tab-btn:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #f0f9ff;
+}
+
+.dashboard-container.dark-mode .tab-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.tab-btn.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .header-subtitle {
+    font-size: 1rem;
+  }
+
+  .analytics-card,
+  .entries-card {
+    padding: 1.5rem;
+  }
+
+  .entries-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-tabs {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.card-header h2 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin: 0;
+  font-weight: 600;
+}
+
+.download-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.download-btn:hover {
+  background-color: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
+}
+
+.download-btn:active {
+  transform: translateY(0);
+}
+
+.dashboard-container.dark-mode .download-btn {
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+.dashboard-container.dark-mode .download-btn:hover {
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+================
+File: client/src/components/LibraryAdminDashboard.jsx
+================
+import React, { useState, useEffect } from 'react';
+import PieChartAnalytics from './PieChartAnalytics';
+import StudentDailyEntries from './StudentDailyEntries';
+import darkLightIcon from './assets/darklight.png';
+import './LibraryAdminDashboard.css';
+
+const exportToExcel = (data, fileName = 'login-history.xlsx') => {};
+
+export default function LibraryAdminDashboard() {
+  const [logs, setLogs] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [darkMode, setDarkMode] = useState(false);
+  const [selectedProgram, setSelectedProgram] = useState('all');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [activeTab, setActiveTab] = useState('all');
+
+  useEffect(() => {
+      const fetchLogs = async () => {
+        try {
+          const response = await fetch('http://localhost:5000/api/dashboard/logs');
+          const data = await response.json();
+          const formattedLogs = data.map((log) => {
+            const timeInDecimal = log["Time In"];
+
+            if (timeInDecimal !== undefined && !isNaN(timeInDecimal)) {
+              const hours = Math.floor(timeInDecimal * 24);
+              const minutes = Math.round((timeInDecimal * 24 - hours) * 60);
+
+              const formattedTime = new Date();
+              formattedTime.setHours(hours);
+              formattedTime.setMinutes(minutes);
+
+              const formattedTimeString = formattedTime.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              });
+
+              return {
+                ...log,
+                checkInTime: formattedTimeString,
+                date: new Date().toISOString().split('T')[0],
+              };
+            }
+
+            return log;
+          });
+
+          setLogs(formattedLogs);
+        } catch (error) {
+          console.error('Error fetching logs:', error);
+        }
+      };
+
+      fetchLogs();
+  }, []);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    localStorage.setItem('darkMode', JSON.stringify(!darkMode));
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('darkMode');
+    window.location.href = '/';
+  };
+
+  const programs = [
+    'all',
+    'Computer Science',
+    'Information Technology',
+    'Electronics',
+    'Mechanical Engineering',
+    'Civil Engineering',
+    'Electrical Engineering',
+    'Data Science',
+    'Biotechnology',
+    'Chemical Engineering',
+    'Architecture'
+  ];
+
+  const getDateOptions = () => {
+    const options = [];
+    const today = new Date('2025-01-29');
+
+    for (let i = 0; i < 30; i++) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      options.push(dateStr);
+    }
+    return options;
+  };
+
+  const dateOptions = getDateOptions();
+
+  const getDateLabel = (dateStr) => {
+    if (!dateStr) return 'All Dates';
+    const today = new Date('2025-01-29');
+    const selectedDateObj = new Date(dateStr);
+    const diffTime = today - selectedDateObj;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    return dateStr;
+  };
+
+  return (
+    <div className={`dashboard-container ${darkMode ? 'dark-mode' : ''}`}>
+      <div className="dashboard-header">
+        <div className="header-content">
+          <div>
+            <h1>Library Admin Dashboard</h1>
+            <p className="header-subtitle">Monitor library analytics and student activities</p>
+          </div>
+          <div className="header-controls">
+            <button className="logout-btn" onClick={handleLogout} title="Logout">
+              <svg className="logout-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16 13v-2H7V8l-5 4 5 4v-3h9z"></path><path d="M20 3h-8v2h8v14h-8v2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path></svg>
+              <span className="label">Logout</span>
+            </button>
+
+            <button className="dark-mode-toggle" onClick={toggleDarkMode} title="Toggle Dark Mode">
+              <img src={darkLightIcon} alt="Dark/Light Mode" className="dark-mode-icon" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="dashboard-content">
+        <div className="dashboard-left">
+          <div className="analytics-card">
+            <h2>Library Usage Analytics</h2>
+            <PieChartAnalytics darkMode={darkMode} />
+          </div>
+        </div>
+
+        <div className="dashboard-right">
+          <div className="entries-card">
+            <div className="entries-header">
+              <h2>Log-In History</h2>
+
+              <div className="filter-controls">
+                <select
+                  className="date-dropdown"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  title="Select a date to view"
+                >
+                  <option value="">All Dates</option>
+                  {dateOptions.map((date) => (
+                    <option key={date} value={date}>
+                      {getDateLabel(date)}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  className="program-dropdown"
+                  value={selectedProgram}
+                  onChange={(e) => setSelectedProgram(e.target.value)}
+                >
+                  <option value="all">All Programs</option>
+                  {programs.filter(p => p !== 'all').map((program) => (
+                    <option key={program} value={program}>
+                      {program}
+                    </option>
+                  ))}
+                </select>
+                <div className="filter-tabs">
+                  <button
+                    className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('all')}
+                  >
+                    All
+                  </button>
+                  <button
+                    className={`tab-btn ${activeTab === 'today' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('today')}
+                  >
+                    Today
+                  </button>
+                  <button
+                    className={`tab-btn ${activeTab === 'week' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('week')}
+                  >
+                    This Week
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="entries-table-container">
+              <div className="entries-scroll">
+                <table className="entries-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Student Number</th>
+                      <th>Program</th>
+                      <th>Date</th>
+                      <th>Check-in Time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {logs.length > 0 ? (
+                      logs.map((entry) => (
+                        <tr key={entry.ID}>
+                          <td>{entry.Name}</td>
+                          <td>{entry.ID}</td>
+                          <td>{entry.Program}</td>
+                          <td>{entry.date}</td>
+                          <td>{entry.checkInTime}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5">No logs available.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+================
+File: client/src/components/PieChartAnalytics.css
+================
+.pie-chart-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.line-chart-wrapper {
+  width: 100%;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #f0fdf4 100%);
+  border-radius: 8px;
+  border: 1px solid #dbeafe;
+}
+
+.dark-mode .line-chart-wrapper {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(30, 41, 59, 0.3) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.line-chart-wrapper h3 {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+}
+
+.pie-chart-wrapper {
+  width: 100%;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f5f3ff 0%, #fef3c7 100%);
+  border-radius: 8px;
+  border: 1px solid #ede9fe;
+}
+
+.dark-mode .pie-chart-wrapper {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(30, 41, 59, 0.3) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.pie-chart-wrapper h3 {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+}
+
+.pie-chart-container svg {
+  margin: 0 auto;
+}
+
+.recharts-wrapper {
+  margin: 1rem auto;
+}
+
+.recharts-pie-text {
+  font-size: 12px;
+  fill: var(--text-primary);
+  font-weight: 600;
+}
+
+.recharts-legend-wrapper {
+  padding: 1rem 0 !important;
+}
+
+.recharts-legend-item-text {
+  color: var(--text-secondary) !important;
+  font-weight: 500 !important;
+}
+
+.recharts-cartesian-axis-tick text {
+  fill: var(--text-secondary);
+}
+
+.recharts-tooltip-wrapper {
+  outline: none;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  background: var(--border-color);
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.stat-color {
+  width: 4px;
+  height: 40px;
+  border-radius: 4px;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin: 0;
+}
+
+.stat-value {
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  font-weight: 700;
+  margin: 0.25rem 0 0 0;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recharts-pie-text {
+    font-size: 10px;
+  }
+
+  .line-chart-wrapper h3,
+  .pie-chart-wrapper h3 {
+    font-size: 1rem;
+  }
+}
+
+================
+File: client/src/components/PieChartAnalytics.jsx
+================
+import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
+import './PieChartAnalytics.css'
+
+export default function PieChartAnalytics({ darkMode }) {
+  const weeklyData = [
+    { day: 'Monday', students: 145 },
+    { day: 'Tuesday', students: 182 },
+    { day: 'Wednesday', students: 198 },
+    { day: 'Thursday', students: 165 },
+    { day: 'Friday', students: 210 },
+    { day: 'Saturday', students: 89 },
+    { day: 'Sunday', students: 72 }
+  ]
+
+  const data = [
+    { name: 'Computer Science', value: 450, color: '#3b82f6' },
+    { name: 'Information Technology', value: 280, color: '#10b981' },
+    { name: 'Electronics', value: 190, color: '#f59e0b' },
+    { name: 'Data Science', value: 230, color: '#8b5cf6' },
+    { name: 'Civil Engineering', value: 210, color: '#ec4899' }
+  ]
+
+  const stats = [
+    { label: 'Top Program', value: 'Computer Science', color: '#3b82f6' },
+    { label: 'Active Students', value: '245', color: '#10b981' },
+    { label: 'Avg. Daily Visits', value: '89', color: '#f59e0b' }
+  ]
+
+  return (
+    <div className="pie-chart-container">
+      <div className="line-chart-wrapper">
+        <h3>Weekly Library Lab Usage</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={weeklyData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis
+              dataKey="day"
+              stroke="#6b7280"
+              style={{ fontSize: '0.9rem' }}
+            />
+            <YAxis
+              stroke="#6b7280"
+              label={{ value: 'Students', angle: -90, position: 'insideLeft' }}
+              style={{ fontSize: '0.9rem' }}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: '#fff',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px'
+              }}
+              formatter={(value) => [`${value} students`, 'Daily Usage']}
+              labelStyle={{ color: '#1f2937' }}
+            />
+            <Line
+              type="monotone"
+              dataKey="students"
+              stroke="#3b82f6"
+              dot={{ fill: '#3b82f6', r: 5 }}
+              activeDot={{ r: 7 }}
+              strokeWidth={3}
+              isAnimationActive={true}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="pie-chart-wrapper">
+        <h3>Library Lab Usage by Program</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              outerRadius={80}
+              fill="#8884d8"
+              dataKey="value"
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip
+              formatter={(value) => `${value} items`}
+              contentStyle={{ backgroundColor: '#f3f4f6', borderRadius: '8px', border: 'none' }}
+            />
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="stats-grid">
+        {stats.map((stat, index) => (
+          <div key={index} className="stat-card">
+            <div className="stat-color" style={{ backgroundColor: stat.color }}></div>
+            <div className="stat-content">
+              <p className="stat-label">{stat.label}</p>
+              <p className="stat-value">{stat.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+================
+File: client/src/components/StudentDailyEntries.css
+================
+.entries-table-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.entries-scroll {
+  /* Make the table area scrollable while keeping header/footer visible. */
+  max-height: min(65vh, calc(100vh - 300px));
+  overflow-y: auto;
+  border-radius: 8px;
+  padding-right: 8px; /* space for scrollbar */
+}
+
+.entries-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.entries-table thead {
+  background: var(--bg-tertiary);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.entries-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.entry-row {
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.entry-row:hover {
+  background: var(--bg-tertiary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.entries-table td {
+  padding: 1rem;
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+.name-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.student-number-cell {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+}
+
+.program-cell {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.date-cell {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.checkin-time-cell {
+  text-align: center;
+}
+
+.checkin-time-badge {
+  display: inline-block;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  background: #d1fae5;
+  color: #065f46;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.dark-mode .checkin-time-badge {
+  background: rgba(16, 185, 129, 0.2);
+  color: #86efac;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem !important;
+  color: var(--text-tertiary);
+}
+
+.empty-state p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.entries-footer {
+  display: flex;
+  justify-content: flex-start;
+  gap: 2rem;
+  padding: 1.5rem;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border-top: 1px solid var(--border-color);
+}
+
+.entries-footer p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.entries-footer strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .entries-table {
+    font-size: 0.9rem;
+  }
+
+  .entries-table th,
+  .entries-table td {
+    padding: 0.75rem;
+  }
+
+  .name-cell {
+    gap: 0.5rem;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .entries-table {
+    font-size: 0.85rem;
+  }
+
+  .entries-table thead {
+    display: none;
+  }
+
+  .entry-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+
+  .entry-row > td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  .name-cell {
+    grid-column: 1 / -1;
+  }
+
+  .entries-table td {
+    padding: 0;
+    border: none;
+  }
+
+  .entries-footer {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+================
+File: client/src/components/StudentDailyEntries.jsx
+================
+import './StudentDailyEntries.css';
+export default function StudentDailyEntries({ logs, darkMode }) {
+  return (
+    <div className="entries-table-container">
+      <div className="entries-scroll">
+        <table className="entries-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Student Number</th>
+              <th>Program</th>
+              <th>Date</th>
+              <th>Check-in Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {logs && logs.length > 0 ? (
+              logs.map((entry) => (
+                <tr key={entry.ID} className="entry-row">
+                  <td className="name-cell">{entry.Name}</td>
+                  <td className="student-number-cell">{entry.ID}</td>
+                  <td className="program-cell">{entry.Program}</td>
+                  <td className="date-cell">{entry.date}</td>
+                  <td className="checkin-time-cell">{entry.checkInTime}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="empty-state">
+                  <p>No entries found</p>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );z
+}
+
+================
+File: client/src/Dashboard.jsx
+================
+import { useState } from 'react'
+import './App.css'
+import LibraryAdminDashboard from './components/LibraryAdminDashboard'
+
+function App() {
+  return <LibraryAdminDashboard />
+}
+
+export default App
+
+================
+File: client/src/index.css
+================
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #1f2937;
+  --bg-primary: #f5f7fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f9fafb;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --border-color: #e5e7eb;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+  color: #1f2937;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+================
+File: client/src/Login.jsx
+================
+// LOGIN PAGE
+
+================
+File: client/src/main.jsx
+================
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App'
+import './styles.css'
+
+createRoot(document.getElementById('root')).render(<App />)
+
+================
+File: client/src/styles.css
+================
+body { font-family: Inter, Arial, sans-serif; padding: 24px; }
+.app { max-width: 760px; margin: 0 auto; }
+.output { background: #f7f7f8; padding: 12px; border-radius: 6px; margin-top: 12px; }
+
+================
+File: client/src/utils/excelExport.js
+================
+export const exportToExcel = (data, fileName = 'Login_History.xls') => {
+  if (data.length === 0) {
+    alert('No data to export')
+    return
+  }
+
+  // Create a new workbook data structure
+  const ws_data = [
+    ['Student Name', 'Student Number', 'Program', 'Date', 'Check-in Time']
+  ]
+
+  // Add filtered data rows
+  data.forEach((entry) => {
+    ws_data.push([
+      entry.name,
+      entry.studentNumber,
+      entry.program,
+      entry.date,
+      entry.checkIn
+    ])
+  })
+
+  // Create a simple CSV-like format and convert to Excel
+  const generateXLSX = () => {
+    // Using a simple approach to create Excel file without external dependency
+    let xlsxContent = 'data:application/vnd.ms-excel;base64,'
+
+    // Create XML content for Excel
+    const worksheet = `<?xml version="1.0" encoding="UTF-8"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">
+<Styles>
+<Style ss:ID="Header" ss:Name="header">
+<Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+<Font ss:Bold="1" ss:Color="#FFFFFF"/>
+<Interior ss:Color="#4472C4" ss:Pattern="Solid"/>
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="Data">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+</Styles>
+<Worksheet ss:Name="Log-In History">
+<Table>
+<Column ss:Width="150"/>
+<Column ss:Width="120"/>
+<Column ss:Width="180"/>
+<Column ss:Width="100"/>
+<Column ss:Width="120"/>
+${ws_data
+  .map(
+    (row, idx) => `
+<Row>
+${row
+  .map(
+    (cell) => `<Cell${idx === 0 ? ' ss:StyleID="Header"' : ' ss:StyleID="Data"'}>
+<Data ss:Type="String">${cell || ''}</Data>
+</Cell>`
+  )
+  .join('')}
+</Row>
+`
+  )
+  .join('')}
+</Table>
+</Worksheet>
+</Workbook>`
+
+    // Encode to base64
+    const encodedData = btoa(unescape(encodeURIComponent(worksheet)))
+
+    // Create download link
+    const link = document.createElement('a')
+    link.href = 'data:application/vnd.ms-excel;base64,' + encodedData
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  generateXLSX()
+}
+
+================
+File: client/vite.config.js
+================
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000
+  }
+})
+
+================
+File: README.md
+================
+# mapua-lab-usage-and-monitoring
+A repository for the Electronics Lab Usage and Monitoring for Mapua University Library
+
+
+# juan carlos v. soriano
+
+## Project scaffold
+
+This repository now contains a minimal Node/Express backend and a Vite + React frontend.
+
+Server (backend): `server` — accepts XLSX uploads, parses them with `xlsx`, and stores parsed sheets in `server/db.json` using `lowdb` (JSON file storage).
+
+Client (frontend): `client` — Vite + React app with a simple upload UI that posts files to the server.
+
+Run the server:
+
+```bash
+cd server
+npm install
+npm run dev
+```
+
+Run the client:
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+API endpoints:
+- `POST /api/upload` — form upload with field name `file` (accepts `.xls`/`.xlsx`), stores parsed JSON.
+- `GET /api/data` — returns the stored parsed data.
+
+If you'd like me to add a root-level script to run both concurrently or add a GitHub Actions workflow, tell me and I can add it.
+# AI Assistant Use Case
+
+AI tools can help the development team move faster and reduce friction while implementing features and QA. Practical uses for this project include:
+
+- Generate parsers and mapping code: create functions that convert uploaded XLSX sheets into the app's JSON shape, plus sample mappings and validation rules.
+- Create frontend components and tests: scaffold React components, forms, and unit/integration tests from user stories.
+- Produce API docs and example requests: auto-generate OpenAPI specs, cURL examples, and Postman collections for the backend endpoints.
+- Write data validation and sanitization rules: propose and implement rules (e.g., required columns, types, row-level checks) and generate error messages.
+- Produce seed data and transformation scripts: synthesize realistic test XLSX files and scripts to transform them into desired formats.
+- Code reviews and refactor suggestions: analyze diffs, suggest improvements, and generate small refactor patches or commit messages.
+- CI automation and workflow creation: generate GitHub Actions workflows for linting, testing, and deployment.
+
+If you'd like, I can generate specific artifacts now (validation rules, example XLSX, API spec, or CI workflow). Tell me which one to start with.
+
+# mapua-lab-usage-and-monitoring
+A repository for the Electronics Lab Usage and Monitoring for Mapua University Library
+
+
+# juan carlos v. soriano
+
+================
+File: server/db.json
+================
+{
+  "sheets": [
+    {
+      "id": 1769946890162,
+      "file": "AcadYearDatasheet.xlsx",
+      "data": {
+        "Sheet1": [
+          {
+            "SY-2024-2025": "PROGRAM",
+            "__EMPTY": "August",
+            "__EMPTY_1": "September",
+            "__EMPTY_2": "October ",
+            "1ST TERM": "November",
+            "__EMPTY_3": "December",
+            "__EMPTY_4": "January",
+            "__EMPTY_5": "February",
+            "2ND TERM": "March",
+            "__EMPTY_6": "April",
+            "__EMPTY_7": "May",
+            "__EMPTY_8": "June",
+            "3RD TERM": "July",
+            "__EMPTY_9": "Total"
+          },
+          {
+            "SY-2024-2025": "ABM",
+            "__EMPTY": 5,
+            "__EMPTY_1": 55,
+            "__EMPTY_2": 23,
+            "1ST TERM": 123,
+            "__EMPTY_3": 112,
+            "__EMPTY_4": 56,
+            "__EMPTY_5": 55,
+            "2ND TERM": 77,
+            "__EMPTY_6": 33,
+            "__EMPTY_7": 44,
+            "__EMPTY_8": 26,
+            "3RD TERM": 36,
+            "__EMPTY_9": 645
+          },
+          {
+            "SY-2024-2025": "ACMAN",
+            "__EMPTY": 45,
+            "__EMPTY_1": 251,
+            "__EMPTY_2": 41,
+            "1ST TERM": 88,
+            "__EMPTY_3": 43,
+            "__EMPTY_4": 52,
+            "__EMPTY_5": 14,
+            "2ND TERM": 63,
+            "__EMPTY_6": 89,
+            "__EMPTY_7": 65,
+            "__EMPTY_8": 67,
+            "3RD TERM": 55,
+            "__EMPTY_9": 873
+          },
+          {
+            "SY-2024-2025": "ACT",
+            "__EMPTY": 55,
+            "__EMPTY_1": 21,
+            "__EMPTY_2": 23,
+            "1ST TERM": 14,
+            "__EMPTY_3": 51,
+            "__EMPTY_4": 42,
+            "__EMPTY_5": 16,
+            "2ND TERM": 39,
+            "__EMPTY_6": 56,
+            "__EMPTY_7": 24,
+            "__EMPTY_8": 25,
+            "3RD TERM": 44,
+            "__EMPTY_9": 410
+          },
+          {
+            "SY-2024-2025": "ADA",
+            "__EMPTY": 54,
+            "__EMPTY_1": 23,
+            "__EMPTY_2": 55,
+            "1ST TERM": 15,
+            "__EMPTY_3": 42,
+            "__EMPTY_4": 15,
+            "__EMPTY_5": 63,
+            "2ND TERM": 151,
+            "__EMPTY_6": 35,
+            "__EMPTY_7": 45,
+            "__EMPTY_8": 12,
+            "3RD TERM": 45,
+            "__EMPTY_9": 555
+          },
+          {
+            "SY-2024-2025": "AMMA",
+            "__EMPTY": 52,
+            "__EMPTY_1": 14,
+            "__EMPTY_2": 111,
+            "1ST TERM": 145,
+            "__EMPTY_3": 452,
+            "__EMPTY_4": 16,
+            "__EMPTY_5": 21,
+            "2ND TERM": 11,
+            "__EMPTY_6": 52,
+            "__EMPTY_7": 46,
+            "__EMPTY_8": 55,
+            "3RD TERM": 14,
+            "__EMPTY_9": 989
+          },
+          {
+            "SY-2024-2025": "AMPSY",
+            "__EMPTY": 117,
+            "__EMPTY_1": 842,
+            "__EMPTY_2": 117,
+            "1ST TERM": 1399,
+            "__EMPTY_3": 456,
+            "__EMPTY_4": 1203,
+            "__EMPTY_5": 98,
+            "2ND TERM": 611,
+            "__EMPTY_6": 1442,
+            "__EMPTY_7": 375,
+            "__EMPTY_8": 1091,
+            "3RD TERM": 267,
+            "__EMPTY_9": 8018
+          },
+          {
+            "SY-2024-2025": "AR",
+            "__EMPTY": 1488,
+            "__EMPTY_1": 512,
+            "__EMPTY_2": 1488,
+            "1ST TERM": 203,
+            "__EMPTY_3": 964,
+            "__EMPTY_4": 781,
+            "__EMPTY_5": 1314,
+            "2ND TERM": 55,
+            "__EMPTY_6": 1027,
+            "__EMPTY_7": 688,
+            "__EMPTY_8": 419,
+            "3RD TERM": 1460,
+            "__EMPTY_9": 10399
+          },
+          {
+            "SY-2024-2025": "ARTSDESIGN",
+            "__EMPTY": 332,
+            "__EMPTY_1": 1299,
+            "__EMPTY_2": 332,
+            "1ST TERM": 914,
+            "__EMPTY_3": 1407,
+            "__EMPTY_4": 276,
+            "__EMPTY_5": 67,
+            "2ND TERM": 1188,
+            "__EMPTY_6": 593,
+            "__EMPTY_7": 1012,
+            "__EMPTY_8": 458,
+            "3RD TERM": 845,
+            "__EMPTY_9": 8723
+          },
+          {
+            "SY-2024-2025": "BA",
+            "__EMPTY": 1356,
+            "__EMPTY_1": 721,
+            "__EMPTY_2": 1356,
+            "1ST TERM": 184,
+            "__EMPTY_3": 999,
+            "__EMPTY_4": 63,
+            "__EMPTY_5": 411,
+            "2ND TERM": 1472,
+            "__EMPTY_6": 520,
+            "__EMPTY_7": 1229,
+            "__EMPTY_8": 301,
+            "3RD TERM": 896,
+            "__EMPTY_9": 9508
+          },
+          {
+            "SY-2024-2025": "BAMAN",
+            "__EMPTY": 278,
+            "__EMPTY_1": 1449,
+            "__EMPTY_2": 278,
+            "1ST TERM": 654,
+            "__EMPTY_3": 1106,
+            "__EMPTY_4": 94,
+            "__EMPTY_5": 1362,
+            "2ND TERM": 487,
+            "__EMPTY_6": 825,
+            "__EMPTY_7": 359,
+            "__EMPTY_8": 1288,
+            "3RD TERM": 716,
+            "__EMPTY_9": 8896
+          },
+          {
+            "SY-2024-2025": "BE",
+            "__EMPTY": 1211,
+            "__EMPTY_1": 538,
+            "__EMPTY_2": 1211,
+            "1ST TERM": 412,
+            "__EMPTY_3": 89,
+            "__EMPTY_4": 1423,
+            "__EMPTY_5": 697,
+            "2ND TERM": 1054,
+            "__EMPTY_6": 266,
+            "__EMPTY_7": 911,
+            "__EMPTY_8": 1340,
+            "3RD TERM": 158,
+            "__EMPTY_9": 9310
+          },
+          {
+            "SY-2024-2025": "BIA",
+            "__EMPTY": 345,
+            "__EMPTY_1": 1018,
+            "__EMPTY_2": 345,
+            "1ST TERM": 1466,
+            "__EMPTY_3": 522,
+            "__EMPTY_4": 780,
+            "__EMPTY_5": 1294,
+            "2ND TERM": 67,
+            "__EMPTY_6": 603,
+            "__EMPTY_7": 1182,
+            "__EMPTY_8": 944,
+            "3RD TERM": 231,
+            "__EMPTY_9": 8797
+          },
+          {
+            "SY-2024-2025": "BIO",
+            "__EMPTY": 1379,
+            "__EMPTY_1": 499,
+            "__EMPTY_2": 1379,
+            "1ST TERM": 104,
+            "__EMPTY_3": 816,
+            "__EMPTY_4": 1218,
+            "__EMPTY_5": 392,
+            "2ND TERM": 985,
+            "__EMPTY_6": 54,
+            "__EMPTY_7": 1457,
+            "__EMPTY_8": 683,
+            "3RD TERM": 1109,
+            "__EMPTY_9": 10075
+          },
+          {
+            "SY-2024-2025": "BMA",
+            "__EMPTY": 221,
+            "__EMPTY_1": 1267,
+            "__EMPTY_2": 221,
+            "1ST TERM": 903,
+            "__EMPTY_3": 1492,
+            "__EMPTY_4": 471,
+            "__EMPTY_5": 618,
+            "2ND TERM": 1349,
+            "__EMPTY_6": 87,
+            "__EMPTY_7": 1015,
+            "__EMPTY_8": 755,
+            "3RD TERM": 389,
+            "__EMPTY_9": 8788
+          },
+          {
+            "SY-2024-2025": "BMBE",
+            "__EMPTY": 1087,
+            "__EMPTY_1": 612,
+            "__EMPTY_2": 1087,
+            "1ST TERM": 298,
+            "__EMPTY_3": 951,
+            "__EMPTY_4": 1411,
+            "__EMPTY_5": 76,
+            "2ND TERM": 483,
+            "__EMPTY_6": 1274,
+            "__EMPTY_7": 839,
+            "__EMPTY_8": 564,
+            "3RD TERM": 1321,
+            "__EMPTY_9": 10003
+          },
+          {
+            "SY-2024-2025": "BMCS",
+            "__EMPTY": 192,
+            "__EMPTY_1": 1485,
+            "__EMPTY_2": 192,
+            "1ST TERM": 733,
+            "__EMPTY_3": 1159,
+            "__EMPTY_4": 427,
+            "__EMPTY_5": 1006,
+            "2ND TERM": 68,
+            "__EMPTY_6": 1368,
+            "__EMPTY_7": 589,
+            "__EMPTY_8": 904,
+            "3RD TERM": 256,
+            "__EMPTY_9": 8379
+          },
+          {
+            "SY-2024-2025": "BMEE",
+            "__EMPTY": 1233,
+            "__EMPTY_1": 365,
+            "__EMPTY_2": 1233,
+            "1ST TERM": 847,
+            "__EMPTY_3": 59,
+            "__EMPTY_4": 1440,
+            "__EMPTY_5": 978,
+            "2ND TERM": 514,
+            "__EMPTY_6": 1302,
+            "__EMPTY_7": 289,
+            "__EMPTY_8": 1096,
+            "3RD TERM": 701,
+            "__EMPTY_9": 10057
+          },
+          {
+            "SY-2024-2025": "BMMA",
+            "__EMPTY": 432,
+            "__EMPTY_1": 1189,
+            "__EMPTY_2": 432,
+            "1ST TERM": 1454,
+            "__EMPTY_3": 621,
+            "__EMPTY_4": 94,
+            "__EMPTY_5": 806,
+            "2ND TERM": 1337,
+            "__EMPTY_6": 277,
+            "__EMPTY_7": 999,
+            "__EMPTY_8": 558,
+            "3RD TERM": 1208,
+            "__EMPTY_9": 9407
+          },
+          {
+            "SY-2024-2025": "BMMABMA",
+            "__EMPTY": 1381,
+            "__EMPTY_1": 682,
+            "__EMPTY_2": 1381,
+            "1ST TERM": 161,
+            "__EMPTY_3": 911,
+            "__EMPTY_4": 1053,
+            "__EMPTY_5": 47,
+            "2ND TERM": 1476,
+            "__EMPTY_6": 524,
+            "__EMPTY_7": 1289,
+            "__EMPTY_8": 396,
+            "3RD TERM": 814,
+            "__EMPTY_9": 10115
+          },
+          {
+            "SY-2024-2025": "BMMADJA",
+            "__EMPTY": 309,
+            "__EMPTY_1": 1427,
+            "__EMPTY_2": 309,
+            "1ST TERM": 596,
+            "__EMPTY_3": 1216,
+            "__EMPTY_4": 83,
+            "__EMPTY_5": 1011,
+            "2ND TERM": 734,
+            "__EMPTY_6": 1358,
+            "__EMPTY_7": 462,
+            "__EMPTY_8": 978,
+            "3RD TERM": 219,
+            "__EMPTY_9": 8702
+          },
+          {
+            "SY-2024-2025": "BMPSY ",
+            "__EMPTY": 1297,
+            "__EMPTY_1": 554,
+            "__EMPTY_2": 1297,
+            "1ST TERM": 884,
+            "__EMPTY_3": 66,
+            "__EMPTY_4": 1405,
+            "__EMPTY_5": 317,
+            "2ND TERM": 742,
+            "__EMPTY_6": 1123,
+            "__EMPTY_7": 999,
+            "__EMPTY_8": 1461,
+            "3RD TERM": 408,
+            "__EMPTY_9": 10553
+          },
+          {
+            "SY-2024-2025": "BSMIT",
+            "__EMPTY": 273,
+            "__EMPTY_1": 1108,
+            "__EMPTY_2": 273,
+            "1ST TERM": 1369,
+            "__EMPTY_3": 521,
+            "__EMPTY_4": 781,
+            "__EMPTY_5": 94,
+            "2ND TERM": 1246,
+            "__EMPTY_6": 659,
+            "__EMPTY_7": 987,
+            "__EMPTY_8": 345,
+            "3RD TERM": 1482,
+            "__EMPTY_9": 9138
+          },
+          {
+            "SY-2024-2025": "C-ACT",
+            "__EMPTY": 1174,
+            "__EMPTY_1": 839,
+            "__EMPTY_2": 1174,
+            "1ST TERM": 462,
+            "__EMPTY_3": 1021,
+            "__EMPTY_4": 69,
+            "__EMPTY_5": 1316,
+            "2ND TERM": 598,
+            "__EMPTY_6": 1450,
+            "__EMPTY_7": 276,
+            "__EMPTY_8": 910,
+            "3RD TERM": 723,
+            "__EMPTY_9": 10012
+          },
+          {
+            "SY-2024-2025": "C-BA",
+            "__EMPTY": 214,
+            "__EMPTY_1": 1498,
+            "__EMPTY_2": 214,
+            "1ST TERM": 687,
+            "__EMPTY_3": 1209,
+            "__EMPTY_4": 358,
+            "__EMPTY_5": 54,
+            "2ND TERM": 1387,
+            "__EMPTY_6": 944,
+            "__EMPTY_7": 1065,
+            "__EMPTY_8": 481,
+            "3RD TERM": 812,
+            "__EMPTY_9": 8923
+          },
+          {
+            "SY-2024-2025": "CCE",
+            "__EMPTY": 1342,
+            "__EMPTY_1": 497,
+            "__EMPTY_2": 1342,
+            "1ST TERM": 167,
+            "__EMPTY_3": 999,
+            "__EMPTY_4": 1421,
+            "__EMPTY_5": 631,
+            "2ND TERM": 889,
+            "__EMPTY_6": 1104,
+            "__EMPTY_7": 293,
+            "__EMPTY_8": 756,
+            "3RD TERM": 1286,
+            "__EMPTY_9": 10727
+          },
+          {
+            "SY-2024-2025": "CCPE",
+            "__EMPTY": 5,
+            "__EMPTY_1": 55,
+            "__EMPTY_2": 23,
+            "1ST TERM": 123,
+            "__EMPTY_3": 112,
+            "__EMPTY_4": 56,
+            "__EMPTY_5": 55,
+            "2ND TERM": 77,
+            "__EMPTY_6": 33,
+            "__EMPTY_7": 44,
+            "__EMPTY_8": 26,
+            "3RD TERM": 36,
+            "__EMPTY_9": 645
+          },
+          {
+            "SY-2024-2025": "CE",
+            "__EMPTY": 45,
+            "__EMPTY_1": 251,
+            "__EMPTY_2": 41,
+            "1ST TERM": 88,
+            "__EMPTY_3": 43,
+            "__EMPTY_4": 52,
+            "__EMPTY_5": 14,
+            "2ND TERM": 63,
+            "__EMPTY_6": 89,
+            "__EMPTY_7": 65,
+            "__EMPTY_8": 67,
+            "3RD TERM": 55,
+            "__EMPTY_9": 873
+          },
+          {
+            "SY-2024-2025": "CESE",
+            "__EMPTY": 55,
+            "__EMPTY_1": 21,
+            "__EMPTY_2": 23,
+            "1ST TERM": 14,
+            "__EMPTY_3": 51,
+            "__EMPTY_4": 42,
+            "__EMPTY_5": 16,
+            "2ND TERM": 39,
+            "__EMPTY_6": 56,
+            "__EMPTY_7": 24,
+            "__EMPTY_8": 25,
+            "3RD TERM": 44,
+            "__EMPTY_9": 410
+          },
+          {
+            "SY-2024-2025": "CHE",
+            "__EMPTY": 54,
+            "__EMPTY_1": 23,
+            "__EMPTY_2": 55,
+            "1ST TERM": 15,
+            "__EMPTY_3": 42,
+            "__EMPTY_4": 15,
+            "__EMPTY_5": 63,
+            "2ND TERM": 151,
+            "__EMPTY_6": 35,
+            "__EMPTY_7": 45,
+            "__EMPTY_8": 12,
+            "3RD TERM": 45,
+            "__EMPTY_9": 555
+          },
+          {
+            "SY-2024-2025": "CPE",
+            "__EMPTY": 52,
+            "__EMPTY_1": 14,
+            "__EMPTY_2": 111,
+            "1ST TERM": 145,
+            "__EMPTY_3": 452,
+            "__EMPTY_4": 16,
+            "__EMPTY_5": 21,
+            "2ND TERM": 11,
+            "__EMPTY_6": 52,
+            "__EMPTY_7": 46,
+            "__EMPTY_8": 55,
+            "3RD TERM": 14,
+            "__EMPTY_9": 989
+          },
+          {
+            "SY-2024-2025": "CPE-O",
+            "__EMPTY": 117,
+            "__EMPTY_1": 842,
+            "__EMPTY_2": 117,
+            "1ST TERM": 1399,
+            "__EMPTY_3": 456,
+            "__EMPTY_4": 1203,
+            "__EMPTY_5": 98,
+            "2ND TERM": 611,
+            "__EMPTY_6": 1442,
+            "__EMPTY_7": 375,
+            "__EMPTY_8": 1091,
+            "3RD TERM": 267,
+            "__EMPTY_9": 8018
+          },
+          {
+            "SY-2024-2025": "CPETCPE",
+            "__EMPTY": 1488,
+            "__EMPTY_1": 512,
+            "__EMPTY_2": 1488,
+            "1ST TERM": 203,
+            "__EMPTY_3": 964,
+            "__EMPTY_4": 781,
+            "__EMPTY_5": 1314,
+            "2ND TERM": 55,
+            "__EMPTY_6": 1027,
+            "__EMPTY_7": 688,
+            "__EMPTY_8": 419,
+            "3RD TERM": 1460,
+            "__EMPTY_9": 10399
+          },
+          {
+            "SY-2024-2025": "CS",
+            "__EMPTY": 1254,
+            "__EMPTY_1": 102,
+            "__EMPTY_2": 55,
+            "1ST TERM": 1265,
+            "__EMPTY_3": 1201,
+            "__EMPTY_4": 251,
+            "__EMPTY_5": 194,
+            "2ND TERM": 154,
+            "__EMPTY_6": 196,
+            "__EMPTY_7": 994,
+            "__EMPTY_8": 254,
+            "3RD TERM": 1665,
+            "__EMPTY_9": 7585
+          },
+          {
+            "SY-2024-2025": "CS-O",
+            "__EMPTY": 1087,
+            "__EMPTY_1": 612,
+            "__EMPTY_2": 1087,
+            "1ST TERM": 298,
+            "__EMPTY_3": 951,
+            "__EMPTY_4": 1411,
+            "__EMPTY_5": 76,
+            "2ND TERM": 483,
+            "__EMPTY_6": 1274,
+            "__EMPTY_7": 839,
+            "__EMPTY_8": 564,
+            "3RD TERM": 1321,
+            "__EMPTY_9": 10003
+          },
+          {
+            "SY-2024-2025": "DS",
+            "__EMPTY": 192,
+            "__EMPTY_1": 1485,
+            "__EMPTY_2": 192,
+            "1ST TERM": 733,
+            "__EMPTY_3": 1159,
+            "__EMPTY_4": 427,
+            "__EMPTY_5": 1006,
+            "2ND TERM": 68,
+            "__EMPTY_6": 1368,
+            "__EMPTY_7": 589,
+            "__EMPTY_8": 904,
+            "3RD TERM": 256,
+            "__EMPTY_9": 8379
+          },
+          {
+            "SY-2024-2025": "DF",
+            "__EMPTY": 1233,
+            "__EMPTY_1": 365,
+            "__EMPTY_2": 1233,
+            "1ST TERM": 847,
+            "__EMPTY_3": 59,
+            "__EMPTY_4": 1440,
+            "__EMPTY_5": 978,
+            "2ND TERM": 514,
+            "__EMPTY_6": 1302,
+            "__EMPTY_7": 289,
+            "__EMPTY_8": 1096,
+            "3RD TERM": 701,
+            "__EMPTY_9": 10057
+          },
+          {
+            "SY-2024-2025": "DJA",
+            "__EMPTY": 432,
+            "__EMPTY_1": 1189,
+            "__EMPTY_2": 432,
+            "1ST TERM": 1454,
+            "__EMPTY_3": 621,
+            "__EMPTY_4": 94,
+            "__EMPTY_5": 806,
+            "2ND TERM": 1337,
+            "__EMPTY_6": 277,
+            "__EMPTY_7": 999,
+            "__EMPTY_8": 558,
+            "3RD TERM": 1208,
+            "__EMPTY_9": 9407
+          },
+          {
+            "SY-2024-2025": "ECE",
+            "__EMPTY": 1381,
+            "__EMPTY_1": 682,
+            "__EMPTY_2": 1381,
+            "1ST TERM": 161,
+            "__EMPTY_3": 911,
+            "__EMPTY_4": 1053,
+            "__EMPTY_5": 47,
+            "2ND TERM": 1476,
+            "__EMPTY_6": 524,
+            "__EMPTY_7": 1289,
+            "__EMPTY_8": 396,
+            "3RD TERM": 814,
+            "__EMPTY_9": 10115
+          },
+          {
+            "SY-2024-2025": "EE",
+            "__EMPTY": 309,
+            "__EMPTY_1": 1427,
+            "__EMPTY_2": 309,
+            "1ST TERM": 596,
+            "__EMPTY_3": 1216,
+            "__EMPTY_4": 83,
+            "__EMPTY_5": 1011,
+            "2ND TERM": 734,
+            "__EMPTY_6": 1358,
+            "__EMPTY_7": 462,
+            "__EMPTY_8": 978,
+            "3RD TERM": 219,
+            "__EMPTY_9": 8702
+          },
+          {
+            "SY-2024-2025": "EMC",
+            "__EMPTY": 1297,
+            "__EMPTY_1": 554,
+            "__EMPTY_2": 1297,
+            "1ST TERM": 884,
+            "__EMPTY_3": 66,
+            "__EMPTY_4": 1405,
+            "__EMPTY_5": 317,
+            "2ND TERM": 742,
+            "__EMPTY_6": 1123,
+            "__EMPTY_7": 999,
+            "__EMPTY_8": 1461,
+            "3RD TERM": 408,
+            "__EMPTY_9": 10553
+          },
+          {
+            "SY-2024-2025": "FNT",
+            "__EMPTY": 273,
+            "__EMPTY_1": 1108,
+            "__EMPTY_2": 273,
+            "1ST TERM": 1369,
+            "__EMPTY_3": 521,
+            "__EMPTY_4": 781,
+            "__EMPTY_5": 94,
+            "2ND TERM": 1246,
+            "__EMPTY_6": 659,
+            "__EMPTY_7": 987,
+            "__EMPTY_8": 345,
+            "3RD TERM": 1482,
+            "__EMPTY_9": 9138
+          },
+          {
+            "SY-2024-2025": "GAS",
+            "__EMPTY": 1174,
+            "__EMPTY_1": 839,
+            "__EMPTY_2": 1174,
+            "1ST TERM": 462,
+            "__EMPTY_3": 1021,
+            "__EMPTY_4": 69,
+            "__EMPTY_5": 1316,
+            "2ND TERM": 598,
+            "__EMPTY_6": 1450,
+            "__EMPTY_7": 276,
+            "__EMPTY_8": 910,
+            "3RD TERM": 723,
+            "__EMPTY_9": 10012
+          },
+          {
+            "SY-2024-2025": "GLM",
+            "__EMPTY": 214,
+            "__EMPTY_1": 1498,
+            "__EMPTY_2": 214,
+            "1ST TERM": 687,
+            "__EMPTY_3": 1209,
+            "__EMPTY_4": 358,
+            "__EMPTY_5": 54,
+            "2ND TERM": 1387,
+            "__EMPTY_6": 944,
+            "__EMPTY_7": 1065,
+            "__EMPTY_8": 481,
+            "3RD TERM": 812,
+            "__EMPTY_9": 8923
+          },
+          {
+            "SY-2024-2025": "HUMSS",
+            "__EMPTY": 1342,
+            "__EMPTY_1": 497,
+            "__EMPTY_2": 1342,
+            "1ST TERM": 167,
+            "__EMPTY_3": 999,
+            "__EMPTY_4": 1421,
+            "__EMPTY_5": 631,
+            "2ND TERM": 889,
+            "__EMPTY_6": 1104,
+            "__EMPTY_7": 293,
+            "__EMPTY_8": 756,
+            "3RD TERM": 1286,
+            "__EMPTY_9": 10727
+          },
+          {
+            "SY-2024-2025": "IE",
+            "__EMPTY": 5,
+            "__EMPTY_1": 55,
+            "__EMPTY_2": 23,
+            "1ST TERM": 123,
+            "__EMPTY_3": 112,
+            "__EMPTY_4": 56,
+            "__EMPTY_5": 55,
+            "2ND TERM": 77,
+            "__EMPTY_6": 33,
+            "__EMPTY_7": 44,
+            "__EMPTY_8": 26,
+            "3RD TERM": 36,
+            "__EMPTY_9": 645
+          },
+          {
+            "SY-2024-2025": "INT",
+            "__EMPTY": 45,
+            "__EMPTY_1": 251,
+            "__EMPTY_2": 41,
+            "1ST TERM": 88,
+            "__EMPTY_3": 43,
+            "__EMPTY_4": 52,
+            "__EMPTY_5": 14,
+            "2ND TERM": 63,
+            "__EMPTY_6": 89,
+            "__EMPTY_7": 65,
+            "__EMPTY_8": 67,
+            "3RD TERM": 55,
+            "__EMPTY_9": 873
+          },
+          {
+            "SY-2024-2025": "IS",
+            "__EMPTY": 1087,
+            "__EMPTY_1": 612,
+            "__EMPTY_2": 1087,
+            "1ST TERM": 298,
+            "__EMPTY_3": 951,
+            "__EMPTY_4": 1411,
+            "__EMPTY_5": 76,
+            "2ND TERM": 483,
+            "__EMPTY_6": 1274,
+            "__EMPTY_7": 839,
+            "__EMPTY_8": 564,
+            "3RD TERM": 1321,
+            "__EMPTY_9": 10003
+          },
+          {
+            "SY-2024-2025": "ISMAN",
+            "__EMPTY": 192,
+            "__EMPTY_1": 1485,
+            "__EMPTY_2": 192,
+            "1ST TERM": 733,
+            "__EMPTY_3": 1159,
+            "__EMPTY_4": 427,
+            "__EMPTY_5": 1006,
+            "2ND TERM": 68,
+            "__EMPTY_6": 1368,
+            "__EMPTY_7": 589,
+            "__EMPTY_8": 904,
+            "3RD TERM": 256,
+            "__EMPTY_9": 8379
+          },
+          {
+            "SY-2024-2025": "IT",
+            "__EMPTY": 1233,
+            "__EMPTY_1": 365,
+            "__EMPTY_2": 1233,
+            "1ST TERM": 847,
+            "__EMPTY_3": 59,
+            "__EMPTY_4": 1440,
+            "__EMPTY_5": 978,
+            "2ND TERM": 514,
+            "__EMPTY_6": 1302,
+            "__EMPTY_7": 289,
+            "__EMPTY_8": 1096,
+            "3RD TERM": 701,
+            "__EMPTY_9": 10057
+          },
+          {
+            "SY-2024-2025": "IT-O",
+            "__EMPTY": 432,
+            "__EMPTY_1": 1189,
+            "__EMPTY_2": 432,
+            "1ST TERM": 1454,
+            "__EMPTY_3": 621,
+            "__EMPTY_4": 94,
+            "__EMPTY_5": 806,
+            "2ND TERM": 1337,
+            "__EMPTY_6": 277,
+            "__EMPTY_7": 999,
+            "__EMPTY_8": 558,
+            "3RD TERM": 1208,
+            "__EMPTY_9": 9407
+          },
+          {
+            "SY-2024-2025": "MBA",
+            "__EMPTY": 1381,
+            "__EMPTY_1": 682,
+            "__EMPTY_2": 1381,
+            "1ST TERM": 161,
+            "__EMPTY_3": 911,
+            "__EMPTY_4": 1053,
+            "__EMPTY_5": 47,
+            "2ND TERM": 1476,
+            "__EMPTY_6": 524,
+            "__EMPTY_7": 1289,
+            "__EMPTY_8": 396,
+            "3RD TERM": 814,
+            "__EMPTY_9": 10115
+          },
+          {
+            "SY-2024-2025": "MARKETING",
+            "__EMPTY": 309,
+            "__EMPTY_1": 1427,
+            "__EMPTY_2": 309,
+            "1ST TERM": 596,
+            "__EMPTY_3": 1216,
+            "__EMPTY_4": 83,
+            "__EMPTY_5": 1011,
+            "2ND TERM": 734,
+            "__EMPTY_6": 1358,
+            "__EMPTY_7": 462,
+            "__EMPTY_8": 978,
+            "3RD TERM": 219,
+            "__EMPTY_9": 8702
+          },
+          {
+            "SY-2024-2025": "MAS ",
+            "__EMPTY": 1297,
+            "__EMPTY_1": 554,
+            "__EMPTY_2": 1297,
+            "1ST TERM": 884,
+            "__EMPTY_3": 66,
+            "__EMPTY_4": 1405,
+            "__EMPTY_5": 317,
+            "2ND TERM": 742,
+            "__EMPTY_6": 1123,
+            "__EMPTY_7": 999,
+            "__EMPTY_8": 1461,
+            "3RD TERM": 408,
+            "__EMPTY_9": 10553
+          },
+          {
+            "SY-2024-2025": "MDT",
+            "__EMPTY": 273,
+            "__EMPTY_1": 1108,
+            "__EMPTY_2": 273,
+            "1ST TERM": 1369,
+            "__EMPTY_3": 521,
+            "__EMPTY_4": 781,
+            "__EMPTY_5": 94,
+            "2ND TERM": 1246,
+            "__EMPTY_6": 659,
+            "__EMPTY_7": 987,
+            "__EMPTY_8": 345,
+            "3RD TERM": 1482,
+            "__EMPTY_9": 9138
+          },
+          {
+            "SY-2024-2025": "ME",
+            "__EMPTY": 1174,
+            "__EMPTY_1": 839,
+            "__EMPTY_2": 1174,
+            "1ST TERM": 462,
+            "__EMPTY_3": 1021,
+            "__EMPTY_4": 69,
+            "__EMPTY_5": 1316,
+            "2ND TERM": 598,
+            "__EMPTY_6": 1450,
+            "__EMPTY_7": 276,
+            "__EMPTY_8": 910,
+            "3RD TERM": 723,
+            "__EMPTY_9": 10012
+          },
+          {
+            "SY-2024-2025": "MEBE",
+            "__EMPTY": 214,
+            "__EMPTY_1": 1498,
+            "__EMPTY_2": 214,
+            "1ST TERM": 687,
+            "__EMPTY_3": 1209,
+            "__EMPTY_4": 358,
+            "__EMPTY_5": 54,
+            "2ND TERM": 1387,
+            "__EMPTY_6": 944,
+            "__EMPTY_7": 1065,
+            "__EMPTY_8": 481,
+            "3RD TERM": 812,
+            "__EMPTY_9": 8923
+          },
+          {
+            "SY-2024-2025": "MEMSE",
+            "__EMPTY": 1342,
+            "__EMPTY_1": 497,
+            "__EMPTY_2": 1342,
+            "1ST TERM": 167,
+            "__EMPTY_3": 999,
+            "__EMPTY_4": 1421,
+            "__EMPTY_5": 631,
+            "2ND TERM": 889,
+            "__EMPTY_6": 1104,
+            "__EMPTY_7": 293,
+            "__EMPTY_8": 756,
+            "3RD TERM": 1286,
+            "__EMPTY_9": 10727
+          },
+          {
+            "SY-2024-2025": "MPSY",
+            "__EMPTY": 5,
+            "__EMPTY_1": 55,
+            "__EMPTY_2": 23,
+            "1ST TERM": 123,
+            "__EMPTY_3": 112,
+            "__EMPTY_4": 56,
+            "__EMPTY_5": 55,
+            "2ND TERM": 77,
+            "__EMPTY_6": 33,
+            "__EMPTY_7": 44,
+            "__EMPTY_8": 26,
+            "3RD TERM": 36,
+            "__EMPTY_9": 645
+          },
+          {
+            "SY-2024-2025": "MD",
+            "__EMPTY": 45,
+            "__EMPTY_1": 251,
+            "__EMPTY_2": 41,
+            "1ST TERM": 88,
+            "__EMPTY_3": 43,
+            "__EMPTY_4": 52,
+            "__EMPTY_5": 14,
+            "2ND TERM": 63,
+            "__EMPTY_6": 89,
+            "__EMPTY_7": 65,
+            "__EMPTY_8": 67,
+            "3RD TERM": 55,
+            "__EMPTY_9": 873
+          },
+          {
+            "SY-2024-2025": "NRS",
+            "__EMPTY": 55,
+            "__EMPTY_1": 21,
+            "__EMPTY_2": 23,
+            "1ST TERM": 14,
+            "__EMPTY_3": 51,
+            "__EMPTY_4": 42,
+            "__EMPTY_5": 16,
+            "2ND TERM": 39,
+            "__EMPTY_6": 56,
+            "__EMPTY_7": 24,
+            "__EMPTY_8": 25,
+            "3RD TERM": 44,
+            "__EMPTY_9": 410
+          },
+          {
+            "SY-2024-2025": "PHR",
+            "__EMPTY": 54,
+            "__EMPTY_1": 23,
+            "__EMPTY_2": 55,
+            "1ST TERM": 15,
+            "__EMPTY_3": 42,
+            "__EMPTY_4": 15,
+            "__EMPTY_5": 63,
+            "2ND TERM": 151,
+            "__EMPTY_6": 35,
+            "__EMPTY_7": 45,
+            "__EMPTY_8": 12,
+            "3RD TERM": 45,
+            "__EMPTY_9": 555
+          },
+          {
+            "SY-2024-2025": "PSYA",
+            "__EMPTY": 52,
+            "__EMPTY_1": 14,
+            "__EMPTY_2": 111,
+            "1ST TERM": 145,
+            "__EMPTY_3": 452,
+            "__EMPTY_4": 16,
+            "__EMPTY_5": 21,
+            "2ND TERM": 11,
+            "__EMPTY_6": 52,
+            "__EMPTY_7": 46,
+            "__EMPTY_8": 55,
+            "3RD TERM": 14,
+            "__EMPTY_9": 989
+          },
+          {
+            "SY-2024-2025": "PSYB",
+            "__EMPTY": 117,
+            "__EMPTY_1": 842,
+            "__EMPTY_2": 117,
+            "1ST TERM": 1399,
+            "__EMPTY_3": 456,
+            "__EMPTY_4": 1203,
+            "__EMPTY_5": 98,
+            "2ND TERM": 611,
+            "__EMPTY_6": 1442,
+            "__EMPTY_7": 375,
+            "__EMPTY_8": 1091,
+            "3RD TERM": 267,
+            "__EMPTY_9": 8018
+          },
+          {
+            "SY-2024-2025": "PT",
+            "__EMPTY": 1488,
+            "__EMPTY_1": 512,
+            "__EMPTY_2": 1488,
+            "1ST TERM": 203,
+            "__EMPTY_3": 964,
+            "__EMPTY_4": 781,
+            "__EMPTY_5": 1314,
+            "2ND TERM": 55,
+            "__EMPTY_6": 1027,
+            "__EMPTY_7": 688,
+            "__EMPTY_8": 419,
+            "3RD TERM": 1460,
+            "__EMPTY_9": 10399
+          },
+          {
+            "SY-2024-2025": "REAL ESTATE MGT",
+            "__EMPTY": 1254,
+            "__EMPTY_1": 102,
+            "__EMPTY_2": 55,
+            "1ST TERM": 1265,
+            "__EMPTY_3": 1201,
+            "__EMPTY_4": 251,
+            "__EMPTY_5": 194,
+            "2ND TERM": 154,
+            "__EMPTY_6": 196,
+            "__EMPTY_7": 994,
+            "__EMPTY_8": 254,
+            "3RD TERM": 1665,
+            "__EMPTY_9": 7585
+          },
+          {
+            "SY-2024-2025": "RT",
+            "__EMPTY": 1087,
+            "__EMPTY_1": 612,
+            "__EMPTY_2": 1087,
+            "1ST TERM": 298,
+            "__EMPTY_3": 951,
+            "__EMPTY_4": 1411,
+            "__EMPTY_5": 76,
+            "2ND TERM": 483,
+            "__EMPTY_6": 1274,
+            "__EMPTY_7": 839,
+            "__EMPTY_8": 564,
+            "3RD TERM": 1321,
+            "__EMPTY_9": 10003
+          },
+          {
+            "SY-2024-2025": "STEM",
+            "__EMPTY": 192,
+            "__EMPTY_1": 1485,
+            "__EMPTY_2": 192,
+            "1ST TERM": 733,
+            "__EMPTY_3": 1159,
+            "__EMPTY_4": 427,
+            "__EMPTY_5": 1006,
+            "2ND TERM": 68,
+            "__EMPTY_6": 1368,
+            "__EMPTY_7": 589,
+            "__EMPTY_8": 904,
+            "3RD TERM": 256,
+            "__EMPTY_9": 8379
+          },
+          {
+            "SY-2024-2025": "STEM-HOME",
+            "__EMPTY": 1233,
+            "__EMPTY_1": 365,
+            "__EMPTY_2": 1233,
+            "1ST TERM": 847,
+            "__EMPTY_3": 59,
+            "__EMPTY_4": 1440,
+            "__EMPTY_5": 978,
+            "2ND TERM": 514,
+            "__EMPTY_6": 1302,
+            "__EMPTY_7": 289,
+            "__EMPTY_8": 1096,
+            "3RD TERM": 701,
+            "__EMPTY_9": 10057
+          },
+          {
+            "SY-2024-2025": "BMECEM",
+            "__EMPTY": 432,
+            "__EMPTY_1": 1189,
+            "__EMPTY_2": 432,
+            "1ST TERM": 1454,
+            "__EMPTY_3": 621,
+            "__EMPTY_4": 94,
+            "__EMPTY_5": 806,
+            "2ND TERM": 1337,
+            "__EMPTY_6": 277,
+            "__EMPTY_7": 999,
+            "__EMPTY_8": 558,
+            "3RD TERM": 1208,
+            "__EMPTY_9": 9407
+          },
+          {
+            "SY-2024-2025": "BPE",
+            "__EMPTY": 1381,
+            "__EMPTY_1": 682,
+            "__EMPTY_2": 1381,
+            "1ST TERM": 161,
+            "__EMPTY_3": 911,
+            "__EMPTY_4": 1053,
+            "__EMPTY_5": 47,
+            "2ND TERM": 1476,
+            "__EMPTY_6": 524,
+            "__EMPTY_7": 1289,
+            "__EMPTY_8": 396,
+            "3RD TERM": 814,
+            "__EMPTY_9": 10115
+          },
+          {
+            "SY-2024-2025": "CEMSE",
+            "__EMPTY": 5,
+            "__EMPTY_1": 55,
+            "__EMPTY_2": 23,
+            "1ST TERM": 123,
+            "__EMPTY_3": 112,
+            "__EMPTY_4": 56,
+            "__EMPTY_5": 55,
+            "2ND TERM": 77,
+            "__EMPTY_6": 33,
+            "__EMPTY_7": 44,
+            "__EMPTY_8": 26,
+            "3RD TERM": 36,
+            "__EMPTY_9": 645
+          },
+          {
+            "SY-2024-2025": "ECE-O",
+            "__EMPTY": 45,
+            "__EMPTY_1": 251,
+            "__EMPTY_2": 41,
+            "1ST TERM": 88,
+            "__EMPTY_3": 43,
+            "__EMPTY_4": 52,
+            "__EMPTY_5": 14,
+            "2ND TERM": 63,
+            "__EMPTY_6": 89,
+            "__EMPTY_7": 65,
+            "__EMPTY_8": 67,
+            "3RD TERM": 55,
+            "__EMPTY_9": 873
+          },
+          {
+            "SY-2024-2025": "EE-O",
+            "__EMPTY": 55,
+            "__EMPTY_1": 21,
+            "__EMPTY_2": 23,
+            "1ST TERM": 14,
+            "__EMPTY_3": 51,
+            "__EMPTY_4": 42,
+            "__EMPTY_5": 16,
+            "2ND TERM": 39,
+            "__EMPTY_6": 56,
+            "__EMPTY_7": 24,
+            "__EMPTY_8": 25,
+            "3RD TERM": 44,
+            "__EMPTY_9": 410
+          },
+          {
+            "SY-2024-2025": "ID",
+            "__EMPTY": 54,
+            "__EMPTY_1": 23,
+            "__EMPTY_2": 55,
+            "1ST TERM": 15,
+            "__EMPTY_3": 42,
+            "__EMPTY_4": 15,
+            "__EMPTY_5": 63,
+            "2ND TERM": 151,
+            "__EMPTY_6": 35,
+            "__EMPTY_7": 45,
+            "__EMPTY_8": 12,
+            "3RD TERM": 45,
+            "__EMPTY_9": 555
+          },
+          {
+            "SY-2024-2025": "PHEE",
+            "__EMPTY": 52,
+            "__EMPTY_1": 14,
+            "__EMPTY_2": 111,
+            "1ST TERM": 145,
+            "__EMPTY_3": 452,
+            "__EMPTY_4": 16,
+            "__EMPTY_5": 21,
+            "2ND TERM": 11,
+            "__EMPTY_6": 52,
+            "__EMPTY_7": 46,
+            "__EMPTY_8": 55,
+            "3RD TERM": 14,
+            "__EMPTY_9": 989
+          },
+          {
+            "SY-2024-2025": "PHY",
+            "__EMPTY": 117,
+            "__EMPTY_1": 842,
+            "__EMPTY_2": 117,
+            "1ST TERM": 1399,
+            "__EMPTY_3": 456,
+            "__EMPTY_4": 1203,
+            "__EMPTY_5": 98,
+            "2ND TERM": 611,
+            "__EMPTY_6": 1442,
+            "__EMPTY_7": 375,
+            "__EMPTY_8": 1091,
+            "3RD TERM": 267,
+            "__EMPTY_9": 8018
+          },
+          {
+            "SY-2024-2025": "BMME",
+            "__EMPTY": 45,
+            "__EMPTY_1": 251,
+            "__EMPTY_2": 41,
+            "1ST TERM": 88,
+            "__EMPTY_3": 43,
+            "__EMPTY_4": 52,
+            "__EMPTY_5": 14,
+            "2ND TERM": 63,
+            "__EMPTY_6": 89,
+            "__EMPTY_7": 65,
+            "__EMPTY_8": 67,
+            "3RD TERM": 55,
+            "__EMPTY_9": 873
+          },
+          {
+            "SY-2024-2025": "BMCE",
+            "__EMPTY": 55,
+            "__EMPTY_1": 21,
+            "__EMPTY_2": 23,
+            "1ST TERM": 14,
+            "__EMPTY_3": 51,
+            "__EMPTY_4": 42,
+            "__EMPTY_5": 16,
+            "2ND TERM": 39,
+            "__EMPTY_6": 56,
+            "__EMPTY_7": 24,
+            "__EMPTY_8": 25,
+            "3RD TERM": 44,
+            "__EMPTY_9": 410
+          },
+          {
+            "SY-2024-2025": "Total",
+            "__EMPTY": 44683,
+            "__EMPTY_1": 49034,
+            "__EMPTY_2": 42431,
+            "1ST TERM": 41692,
+            "__EMPTY_3": 46498,
+            "__EMPTY_4": 42959,
+            "__EMPTY_5": 32259,
+            "2ND TERM": 43425,
+            "__EMPTY_6": 52410,
+            "__EMPTY_7": 42077,
+            "__EMPTY_8": 41688,
+            "3RD TERM": 46078,
+            "__EMPTY_9": 525234
+          },
+          {
+            "SY-2024-2025": null,
+            "__EMPTY": 2024,
+            "__EMPTY_1": 2024,
+            "__EMPTY_2": 2024,
+            "1ST TERM": "1ST TERM",
+            "__EMPTY_3": 2024,
+            "__EMPTY_4": 2025,
+            "__EMPTY_5": 2025,
+            "2ND TERM": "2ND TERM",
+            "__EMPTY_6": 2025,
+            "__EMPTY_7": 2025,
+            "__EMPTY_8": 2025,
+            "3RD TERM": 2025,
+            "__EMPTY_9": null
+          },
+          {
+            "SY-2024-2025": "TIME",
+            "__EMPTY": "August",
+            "__EMPTY_1": "September",
+            "__EMPTY_2": "October ",
+            "1ST TERM": "November",
+            "__EMPTY_3": "December",
+            "__EMPTY_4": "January",
+            "__EMPTY_5": "February",
+            "2ND TERM": "March",
+            "__EMPTY_6": "April",
+            "__EMPTY_7": "May",
+            "__EMPTY_8": "June",
+            "3RD TERM": "July",
+            "__EMPTY_9": "Total"
+          },
+          {
+            "SY-2024-2025": "7:00-8:00",
+            "__EMPTY": 5,
+            "__EMPTY_1": 55,
+            "__EMPTY_2": 23,
+            "1ST TERM": 123,
+            "__EMPTY_3": 112,
+            "__EMPTY_4": 56,
+            "__EMPTY_5": 55,
+            "2ND TERM": 77,
+            "__EMPTY_6": 33,
+            "__EMPTY_7": 44,
+            "__EMPTY_8": 26,
+            "3RD TERM": 36,
+            "__EMPTY_9": 645
+          },
+          {
+            "SY-2024-2025": "8:00-9:00",
+            "__EMPTY": 45,
+            "__EMPTY_1": 251,
+            "__EMPTY_2": 41,
+            "1ST TERM": 88,
+            "__EMPTY_3": 43,
+            "__EMPTY_4": 52,
+            "__EMPTY_5": 14,
+            "2ND TERM": 63,
+            "__EMPTY_6": 89,
+            "__EMPTY_7": 65,
+            "__EMPTY_8": 67,
+            "3RD TERM": 55,
+            "__EMPTY_9": 873
+          },
+          {
+            "SY-2024-2025": "9:00-10:00",
+            "__EMPTY": 55,
+            "__EMPTY_1": 21,
+            "__EMPTY_2": 23,
+            "1ST TERM": 14,
+            "__EMPTY_3": 51,
+            "__EMPTY_4": 42,
+            "__EMPTY_5": 16,
+            "2ND TERM": 39,
+            "__EMPTY_6": 56,
+            "__EMPTY_7": 24,
+            "__EMPTY_8": 25,
+            "3RD TERM": 44,
+            "__EMPTY_9": 410
+          },
+          {
+            "SY-2024-2025": "10:00-11:00",
+            "__EMPTY": 54,
+            "__EMPTY_1": 23,
+            "__EMPTY_2": 55,
+            "1ST TERM": 15,
+            "__EMPTY_3": 42,
+            "__EMPTY_4": 15,
+            "__EMPTY_5": 63,
+            "2ND TERM": 151,
+            "__EMPTY_6": 35,
+            "__EMPTY_7": 45,
+            "__EMPTY_8": 12,
+            "3RD TERM": 45,
+            "__EMPTY_9": 555
+          },
+          {
+            "SY-2024-2025": "11:00-12:00",
+            "__EMPTY": 52,
+            "__EMPTY_1": 14,
+            "__EMPTY_2": 111,
+            "1ST TERM": 145,
+            "__EMPTY_3": 452,
+            "__EMPTY_4": 16,
+            "__EMPTY_5": 21,
+            "2ND TERM": 11,
+            "__EMPTY_6": 52,
+            "__EMPTY_7": 46,
+            "__EMPTY_8": 55,
+            "3RD TERM": 14,
+            "__EMPTY_9": 989
+          },
+          {
+            "SY-2024-2025": "12:00-1:00",
+            "__EMPTY": 117,
+            "__EMPTY_1": 842,
+            "__EMPTY_2": 117,
+            "1ST TERM": 1399,
+            "__EMPTY_3": 456,
+            "__EMPTY_4": 1203,
+            "__EMPTY_5": 98,
+            "2ND TERM": 611,
+            "__EMPTY_6": 1442,
+            "__EMPTY_7": 375,
+            "__EMPTY_8": 1091,
+            "3RD TERM": 267,
+            "__EMPTY_9": 8018
+          },
+          {
+            "SY-2024-2025": "1:00-2:00",
+            "__EMPTY": 1488,
+            "__EMPTY_1": 512,
+            "__EMPTY_2": 1488,
+            "1ST TERM": 203,
+            "__EMPTY_3": 964,
+            "__EMPTY_4": 781,
+            "__EMPTY_5": 1314,
+            "2ND TERM": 55,
+            "__EMPTY_6": 1027,
+            "__EMPTY_7": 688,
+            "__EMPTY_8": 419,
+            "3RD TERM": 1460,
+            "__EMPTY_9": 10399
+          },
+          {
+            "SY-2024-2025": "2:00-3:00",
+            "__EMPTY": 332,
+            "__EMPTY_1": 1299,
+            "__EMPTY_2": 332,
+            "1ST TERM": 914,
+            "__EMPTY_3": 1407,
+            "__EMPTY_4": 276,
+            "__EMPTY_5": 67,
+            "2ND TERM": 1188,
+            "__EMPTY_6": 593,
+            "__EMPTY_7": 1012,
+            "__EMPTY_8": 458,
+            "3RD TERM": 845,
+            "__EMPTY_9": 8723
+          },
+          {
+            "SY-2024-2025": "3:00-4:00",
+            "__EMPTY": 1356,
+            "__EMPTY_1": 721,
+            "__EMPTY_2": 1356,
+            "1ST TERM": 184,
+            "__EMPTY_3": 999,
+            "__EMPTY_4": 63,
+            "__EMPTY_5": 411,
+            "2ND TERM": 1472,
+            "__EMPTY_6": 520,
+            "__EMPTY_7": 1229,
+            "__EMPTY_8": 301,
+            "3RD TERM": 896,
+            "__EMPTY_9": 9508
+          },
+          {
+            "SY-2024-2025": "4:00-5:00",
+            "__EMPTY": 278,
+            "__EMPTY_1": 1449,
+            "__EMPTY_2": 278,
+            "1ST TERM": 654,
+            "__EMPTY_3": 1106,
+            "__EMPTY_4": 94,
+            "__EMPTY_5": 1362,
+            "2ND TERM": 487,
+            "__EMPTY_6": 825,
+            "__EMPTY_7": 359,
+            "__EMPTY_8": 1288,
+            "3RD TERM": 716,
+            "__EMPTY_9": 8896
+          },
+          {
+            "SY-2024-2025": "5:00-6:00",
+            "__EMPTY": 1211,
+            "__EMPTY_1": 538,
+            "__EMPTY_2": 1211,
+            "1ST TERM": 412,
+            "__EMPTY_3": 89,
+            "__EMPTY_4": 1423,
+            "__EMPTY_5": 697,
+            "2ND TERM": 1054,
+            "__EMPTY_6": 266,
+            "__EMPTY_7": 911,
+            "__EMPTY_8": 1340,
+            "3RD TERM": 158,
+            "__EMPTY_9": 9310
+          },
+          {
+            "SY-2024-2025": "6:00-7:00",
+            "__EMPTY": 345,
+            "__EMPTY_1": 1018,
+            "__EMPTY_2": 345,
+            "1ST TERM": 1466,
+            "__EMPTY_3": 522,
+            "__EMPTY_4": 780,
+            "__EMPTY_5": 1294,
+            "2ND TERM": 67,
+            "__EMPTY_6": 603,
+            "__EMPTY_7": 1182,
+            "__EMPTY_8": 944,
+            "3RD TERM": 231,
+            "__EMPTY_9": 8797
+          },
+          {
+            "SY-2024-2025": "7:00-8:00",
+            "__EMPTY": 1379,
+            "__EMPTY_1": 499,
+            "__EMPTY_2": 1379,
+            "1ST TERM": 104,
+            "__EMPTY_3": 816,
+            "__EMPTY_4": 1218,
+            "__EMPTY_5": 392,
+            "2ND TERM": 985,
+            "__EMPTY_6": 54,
+            "__EMPTY_7": 1457,
+            "__EMPTY_8": 683,
+            "3RD TERM": 1109,
+            "__EMPTY_9": 10075
+          },
+          {
+            "SY-2024-2025": "8:00-9:00",
+            "__EMPTY": 221,
+            "__EMPTY_1": 1267,
+            "__EMPTY_2": 221,
+            "1ST TERM": 903,
+            "__EMPTY_3": 1492,
+            "__EMPTY_4": 471,
+            "__EMPTY_5": 618,
+            "2ND TERM": 1349,
+            "__EMPTY_6": 87,
+            "__EMPTY_7": 1015,
+            "__EMPTY_8": 755,
+            "3RD TERM": 389,
+            "__EMPTY_9": 8788
+          },
+          {
+            "SY-2024-2025": "TOTAL",
+            "__EMPTY": 6938,
+            "__EMPTY_1": 8509,
+            "__EMPTY_2": 6980,
+            "1ST TERM": 6624,
+            "__EMPTY_3": 8551,
+            "__EMPTY_4": 4304,
+            "__EMPTY_5": 3858,
+            "2ND TERM": 4213,
+            "__EMPTY_6": 3743,
+            "__EMPTY_7": 3190,
+            "__EMPTY_8": 3962,
+            "3RD TERM": 6265,
+            "__EMPTY_9": 67137
+          }
+        ]
+      },
+      "uploadedAt": "2026-02-01T11:54:50.162Z"
+    },
+    {
+      "id": 1769946900237,
+      "file": "CurrentLogDatasheet.xlsx",
+      "data": {
+        "Sheet1": [
+          {
+            "ID": 2029112333,
+            "Name": "Kasimato, Ayano",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.6076388888888888
+          },
+          {
+            "ID": 2027986544,
+            "Name": "Alberea, Yurina",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2028112332,
+            "Name": "Kawasaki, Akiro",
+            "Program": "CS",
+            "Year": 2,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2030236425,
+            "Name": "Bloodflame, Elizabeth",
+            "Program": "CE",
+            "Year": 1,
+            "Time In": 0.5131944444444444
+          },
+          {
+            "ID": 2027102992,
+            "Name": "Ookami, Mio",
+            "Program": "PSYA",
+            "Year": 3,
+            "Time In": 0.4909722222222222
+          },
+          {
+            "ID": 2027112113,
+            "Name": "Kawasaki, Yoshiko",
+            "Program": "PSYB",
+            "Year": 3,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2030123456,
+            "Name": "Ceres, Fauna",
+            "Program": "MRKT",
+            "Year": 1,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2028125944,
+            "Name": "Tsu, Dot",
+            "Program": "CE",
+            "Year": 3,
+            "Time In": 0.4173611111111111
+          },
+          {
+            "ID": 2027216785,
+            "Name": "Itami, Erica",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.4041666666666667
+          },
+          {
+            "ID": 2027864221,
+            "Name": "Banks, Rob",
+            "Program": "IT",
+            "Year": 3,
+            "Time In": 0.38819444444444445
+          }
+        ]
+      },
+      "uploadedAt": "2026-02-01T11:55:00.237Z"
+    },
+    {
+      "id": 1769950185153,
+      "file": "CurrentLogDatasheet.xlsx",
+      "data": {
+        "Sheet1": [
+          {
+            "ID": 2029112333,
+            "Name": "Kasimato, Ayano",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.6076388888888888
+          },
+          {
+            "ID": 2027986544,
+            "Name": "Alberea, Yurina",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2028112332,
+            "Name": "Kawasaki, Akiro",
+            "Program": "CS",
+            "Year": 2,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2030236425,
+            "Name": "Bloodflame, Elizabeth",
+            "Program": "CE",
+            "Year": 1,
+            "Time In": 0.5131944444444444
+          },
+          {
+            "ID": 2027102992,
+            "Name": "Ookami, Mio",
+            "Program": "PSYA",
+            "Year": 3,
+            "Time In": 0.4909722222222222
+          },
+          {
+            "ID": 2027112113,
+            "Name": "Kawasaki, Yoshiko",
+            "Program": "PSYB",
+            "Year": 3,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2030123456,
+            "Name": "Ceres, Fauna",
+            "Program": "MRKT",
+            "Year": 1,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2028125944,
+            "Name": "Tsu, Dot",
+            "Program": "CE",
+            "Year": 3,
+            "Time In": 0.4173611111111111
+          },
+          {
+            "ID": 2027216785,
+            "Name": "Itami, Erica",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.4041666666666667
+          },
+          {
+            "ID": 2027864221,
+            "Name": "Banks, Rob",
+            "Program": "IT",
+            "Year": 3,
+            "Time In": 0.38819444444444445
+          },
+          {
+            "ID": 2029864221,
+            "Name": "James, Rob",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.42986111111111114
+          }
+        ]
+      },
+      "uploadedAt": "2026-02-01T12:49:45.153Z"
+    },
+    {
+      "id": 1769950738503,
+      "file": "CurrentLogDatasheet.xlsx",
+      "data": {
+        "Sheet1": [
+          {
+            "ID": 2029112333,
+            "Name": "Kasimato, Ayano",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.6076388888888888
+          },
+          {
+            "ID": 2027986544,
+            "Name": "Alberea, Yurina",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2028112332,
+            "Name": "Kawasaki, Akiro",
+            "Program": "CS",
+            "Year": 2,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2030236425,
+            "Name": "Bloodflame, Elizabeth",
+            "Program": "CE",
+            "Year": 1,
+            "Time In": 0.5131944444444444
+          },
+          {
+            "ID": 2027102992,
+            "Name": "Ookami, Mio",
+            "Program": "PSYA",
+            "Year": 3,
+            "Time In": 0.4909722222222222
+          },
+          {
+            "ID": 2027112113,
+            "Name": "Kawasaki, Yoshiko",
+            "Program": "PSYB",
+            "Year": 3,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2030123456,
+            "Name": "Ceres, Fauna",
+            "Program": "MRKT",
+            "Year": 1,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2028125944,
+            "Name": "Tsu, Dot",
+            "Program": "CE",
+            "Year": 3,
+            "Time In": 0.4173611111111111
+          },
+          {
+            "ID": 2027216785,
+            "Name": "Itami, Erica",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.4041666666666667
+          },
+          {
+            "ID": 2027864221,
+            "Name": "Banks, Rob",
+            "Program": "IT",
+            "Year": 3,
+            "Time In": 0.38819444444444445
+          },
+          {
+            "ID": 2029864221,
+            "Name": "James, Rob",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.42986111111111114
+          },
+          {
+            "ID": 2029864921,
+            "Name": "James, Roeid",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.47152777777777777
+          }
+        ]
+      },
+      "uploadedAt": "2026-02-01T12:58:58.503Z"
+    },
+    {
+      "id": 1769952117365,
+      "file": "CurrentLogDatasheet.xlsx",
+      "data": {
+        "Sheet1": [
+          {
+            "ID": 2029112333,
+            "Name": "Kasimato, Ayano",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.6076388888888888
+          },
+          {
+            "ID": 2027986544,
+            "Name": "Alberea, Yurina",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2028112332,
+            "Name": "Kawasaki, Akiro",
+            "Program": "CS",
+            "Year": 2,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2030236425,
+            "Name": "Bloodflame, Elizabeth",
+            "Program": "CE",
+            "Year": 1,
+            "Time In": 0.5131944444444444
+          },
+          {
+            "ID": 2027102992,
+            "Name": "Ookami, Mio",
+            "Program": "PSYA",
+            "Year": 3,
+            "Time In": 0.4909722222222222
+          },
+          {
+            "ID": 2027112113,
+            "Name": "Kawasaki, Yoshiko",
+            "Program": "PSYB",
+            "Year": 3,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2030123456,
+            "Name": "Ceres, Fauna",
+            "Program": "MRKT",
+            "Year": 1,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2028125944,
+            "Name": "Tsu, Dot",
+            "Program": "CE",
+            "Year": 3,
+            "Time In": 0.4173611111111111
+          },
+          {
+            "ID": 2027216785,
+            "Name": "Itami, Erica",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.4041666666666667
+          },
+          {
+            "ID": 2027864221,
+            "Name": "Banks, Rob",
+            "Program": "IT",
+            "Year": 3,
+            "Time In": 0.38819444444444445
+          },
+          {
+            "ID": 2029864221,
+            "Name": "James, Rob",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.42986111111111114
+          },
+          {
+            "ID": 2029864921,
+            "Name": "James, Roeid",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.47152777777777777
+          },
+          {
+            "ID": 2029855521,
+            "Name": "James, Gunn",
+            "Program": "IT",
+            "Year": 3,
+            "Time In": 0.6076388888888888
+          }
+        ]
+      },
+      "uploadedAt": "2026-02-01T13:21:57.365Z"
+    },
+    {
+      "id": 1769957710721,
+      "file": "CurrentLogDatasheet.xlsx",
+      "data": {
+        "Sheet1": [
+          {
+            "ID": 2029112333,
+            "Name": "Kasimato, Ayano",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.6076388888888888
+          },
+          {
+            "ID": 2027986544,
+            "Name": "Alberea, Yurina",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2028112332,
+            "Name": "Kawasaki, Akiro",
+            "Program": "CS",
+            "Year": 2,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2030236425,
+            "Name": "Bloodflame, Elizabeth",
+            "Program": "CE",
+            "Year": 1,
+            "Time In": 0.5131944444444444
+          },
+          {
+            "ID": 2027102992,
+            "Name": "Ookami, Mio",
+            "Program": "PSYA",
+            "Year": 3,
+            "Time In": 0.4909722222222222
+          },
+          {
+            "ID": 2027112113,
+            "Name": "Kawasaki, Yoshiko",
+            "Program": "PSYB",
+            "Year": 3,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2030123456,
+            "Name": "Ceres, Fauna",
+            "Program": "MRKT",
+            "Year": 1,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2028125944,
+            "Name": "Tsu, Dot",
+            "Program": "CE",
+            "Year": 3,
+            "Time In": 0.4173611111111111
+          },
+          {
+            "ID": 2027216785,
+            "Name": "Itami, Erica",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.4041666666666667
+          },
+          {
+            "ID": 2027864221,
+            "Name": "Banks, Rob",
+            "Program": "IT",
+            "Year": 3,
+            "Time In": 0.38819444444444445
+          },
+          {
+            "ID": 2029864221,
+            "Name": "James, Rob",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.42986111111111114
+          },
+          {
+            "ID": 2029864921,
+            "Name": "James, Roeid",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.47152777777777777
+          },
+          {
+            "ID": 2029855521,
+            "Name": "Derby, Pretty",
+            "Program": "IT",
+            "Year": 3,
+            "Time In": 0.6076388888888888
+          }
+        ]
+      },
+      "uploadedAt": "2026-02-01T14:55:10.721Z"
+    },
+    {
+      "id": 1769958560879,
+      "file": "CurrentLogDatasheet.xlsx",
+      "data": {
+        "Sheet1": [
+          {
+            "ID": 2029112333,
+            "Name": "Kasimato, Ayano",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.6076388888888888
+          },
+          {
+            "ID": 2027986544,
+            "Name": "Alberea, Yurina",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2028112332,
+            "Name": "Kawasaki, Akiro",
+            "Program": "CS",
+            "Year": 2,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2030236425,
+            "Name": "Bloodflame, Elizabeth",
+            "Program": "CE",
+            "Year": 1,
+            "Time In": 0.5131944444444444
+          },
+          {
+            "ID": 2027102992,
+            "Name": "Ookami, Mio",
+            "Program": "PSYA",
+            "Year": 3,
+            "Time In": 0.4909722222222222
+          },
+          {
+            "ID": 2027112113,
+            "Name": "Kawasaki, Yoshiko",
+            "Program": "PSYB",
+            "Year": 3,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2030123456,
+            "Name": "Ceres, Fauna",
+            "Program": "MRKT",
+            "Year": 1,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2028125944,
+            "Name": "Tsu, Dot",
+            "Program": "CE",
+            "Year": 3,
+            "Time In": 0.4173611111111111
+          },
+          {
+            "ID": 2027216785,
+            "Name": "Itami, Erica",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.4041666666666667
+          },
+          {
+            "ID": 2027864221,
+            "Name": "Banks, Rob",
+            "Program": "IT",
+            "Year": 3,
+            "Time In": 0.38819444444444445
+          },
+          {
+            "ID": 2029864221,
+            "Name": "James, Rob",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.42986111111111114
+          },
+          {
+            "ID": 2029864921,
+            "Name": "James, Roeid",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.47152777777777777
+          },
+          {
+            "ID": 2029855521,
+            "Name": "Derby, Pretty",
+            "Program": "IT",
+            "Year": 3,
+            "Time In": 0.6076388888888888
+          }
+        ]
+      },
+      "uploadedAt": "2026-02-01T15:09:20.879Z"
+    },
+    {
+      "id": 1769958850513,
+      "file": "CurrentLogDatasheet.xlsx",
+      "data": {
+        "Sheet1": [
+          {
+            "ID": 2029112333,
+            "Name": "Kasimato, Ayano",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.6076388888888888
+          },
+          {
+            "ID": 2027986544,
+            "Name": "Alberea, Yurina",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2028112332,
+            "Name": "Kawasaki, Akiro",
+            "Program": "CS",
+            "Year": 2,
+            "Time In": 0.5625
+          },
+          {
+            "ID": 2030236425,
+            "Name": "Bloodflame, Elizabeth",
+            "Program": "CE",
+            "Year": 1,
+            "Time In": 0.5131944444444444
+          },
+          {
+            "ID": 2027102992,
+            "Name": "Ookami, Mio",
+            "Program": "PSYA",
+            "Year": 3,
+            "Time In": 0.4909722222222222
+          },
+          {
+            "ID": 2027112113,
+            "Name": "Kawasaki, Yoshiko",
+            "Program": "PSYB",
+            "Year": 3,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2030123456,
+            "Name": "Ceres, Fauna",
+            "Program": "MRKT",
+            "Year": 1,
+            "Time In": 0.4548611111111111
+          },
+          {
+            "ID": 2028125944,
+            "Name": "Tsu, Dot",
+            "Program": "CE",
+            "Year": 3,
+            "Time In": 0.4173611111111111
+          },
+          {
+            "ID": 2027216785,
+            "Name": "Itami, Erica",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.4041666666666667
+          },
+          {
+            "ID": 2027864221,
+            "Name": "Banks, Rob",
+            "Program": "IT",
+            "Year": 3,
+            "Time In": 0.38819444444444445
+          },
+          {
+            "ID": 2029864221,
+            "Name": "James, Rob",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.42986111111111114
+          },
+          {
+            "ID": 2029864921,
+            "Name": "James, Roeid",
+            "Program": "CS",
+            "Year": 3,
+            "Time In": 0.47152777777777777
+          },
+          {
+            "ID": 2029855521,
+            "Name": "Derby, Pretty",
+            "Program": "IT",
+            "Year": 3,
+            "Time In": 0.6076388888888888
+          },
+          {
+            "ID": 2029888521,
+            "Name": "Umamusume, Jane",
+            "Program": "CE",
+            "Year": 2,
+            "Time In": 0.4909722222222222
+          }
+        ]
+      },
+      "uploadedAt": "2026-02-01T15:14:10.513Z"
+    }
+  ]
+}
+
+================
+File: server/index.js
+================
+const express = require('express');
+const cors = require('cors');
+const multer = require('multer');
+const xlsx = require('xlsx');
+const path = require('path');
+const fs = require('fs');
+const { Low } = require('lowdb');
+const { JSONFile } = require('lowdb/node');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const UPLOAD_DIR = path.join(__dirname, 'uploads');
+if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
+  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+});
+const upload = multer({ storage });
+
+const dbFile = path.join(__dirname, 'db.json');
+const adapter = new JSONFile(dbFile);
+const db = new Low(adapter);
+
+async function initDb() {
+  await db.read();
+  db.data = db.data || { sheets: [] };
+  await db.write();
+}
+
+app.post('/api/upload', upload.single('file'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+  try {
+    const workbook = xlsx.readFile(req.file.path);
+    const result = {};
+
+    workbook.SheetNames.forEach(name => {
+      const sheet = workbook.Sheets[name];
+      result[name] = xlsx.utils.sheet_to_json(sheet, { defval: null });
+    });
+
+    await db.read();
+    db.data = db.data || { sheets: [] };
+    db.data.sheets.push({ id: Date.now(), file: req.file.originalname, data: result, uploadedAt: new Date().toISOString() });
+    await db.write();
+
+    res.json({ ok: true, stored: true, entry: db.data.sheets[db.data.sheets.length - 1] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to parse xlsx' });
+  }
+});
+
+app.get('/api/data', async (req, res) => {
+  await db.read();
+  res.json(db.data || { sheets: [] });
+});
+
+app.get('/api/dashboard/summary', async (req, res) => {
+  await db.read();
+
+  const sheets = db.data?.sheets || [];
+
+  const logSheet = (db.data?.sheets || [])
+    .filter(s => s.file === 'CurrentLogDatasheet.xlsx')
+    .sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt))[0];
+
+  if (!logSheet) {
+    return res.json({
+      totalLogs: 0,
+      byProgram: {},
+      byHour: {},
+      recentLogs: []
+    });
+  }
+
+  const rows = logSheet.data.Sheet1 || [];
+
+  const byProgram = {};
+  const byHour = {};
+
+  rows.forEach(r => {
+    // Program count
+    if (r.Program) {
+      byProgram[r.Program] = (byProgram[r.Program] || 0) + 1;
+    }
+
+    // Time In (Excel time → hour)
+    if (typeof r["Time In"] === 'number') {
+      const hour = Math.floor(r["Time In"] * 24);
+      byHour[hour] = (byHour[hour] || 0) + 1;
+    }
+  });
+
+  res.json({
+    totalLogs: rows.length,
+    byProgram,
+    byHour,
+    recentLogs: rows.slice(-10).reverse()
+  });
+});
+
+
+app.get('/api/dashboard/logs', async (req, res) => {
+  await db.read();
+
+  const logSheet = (db.data?.sheets || [])
+    .filter(s => s.file === 'CurrentLogDatasheet.xlsx')
+    .sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt))[0];
+
+  if (!logSheet) return res.json([]);
+
+  res.json(logSheet.data.Sheet1 || []);
+});
+
+const PORT = process.env.PORT || 5000;
+initDb().then(() => {
+  app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
+});
+
+================
+File: server/package.json
+================
+{
+  "name": "mapua-server",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "lowdb": "^5.0.0",
+    "multer": "^1.4.5-lts.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
+
+
+
+
+
+================================================================
+End of Codebase
+================================================================
