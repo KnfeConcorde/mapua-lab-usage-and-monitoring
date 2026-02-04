@@ -1,0 +1,114 @@
+/* Full-page wrapper - set background here (you can change to an image or gradient) */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f5f7fb; /* change or override this for a custom background */
+  padding: 24px;
+  font-family: Arial, sans-serif;
+}
+
+/* Centered two-pane card */
+.login-box {
+  display: flex;
+  width: 900px;
+  max-width: 96%;
+  height: 520px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+/* Left pane - logos stacked vertically */
+.left-pane {
+  width: 45%;
+  background: linear-gradient(180deg, #ffffff, #f0f4ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.logo-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.mapua-logo {
+  max-width: 160px;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.name-logo {
+  max-width: 220px;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Right pane - login form */
+.right-pane {
+  width: 55%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px;
+}
+
+.login-form {
+  width: 100%;
+  max-width: 360px;
+  padding: 8px;
+}
+
+.login-form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.login-form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+.login-form button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive: stack panes on small screens */
+@media (max-width: 768px) {
+  .login-box {
+    flex-direction: column;
+    height: auto;
+  }
+  .left-pane, .right-pane {
+    width: 100%;
+    padding: 28px 18px;
+  }
+  .mapua-logo { max-width: 140px; }
+  .name-logo { max-width: 180px; }
+}
