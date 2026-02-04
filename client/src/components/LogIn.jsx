@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LogIn.css';
-import mapuaLogo from '../assets/Mapua Logo.png';
-import nameLogo from '../assets/Name Logo.png';
+import mapuaLogo from './assets/Mapua Logo.png';
+import nameLogo from './assets/Name Logo.png';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -11,39 +11,30 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Hardcoded credentials for development
+  const DEV_CREDENTIALS = {
+    username: 'admin',
+    password: 'mapua@1925'
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    try {
-      // Replace with your actual API endpoint
-      const res = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        // Store authentication token/status
+    // Simulate network delay
+    setTimeout(() => {
+      if (username === DEV_CREDENTIALS.username && password === DEV_CREDENTIALS.password) {
+        // Store authentication status
         localStorage.setItem('isAuthenticated', 'true');
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-        }
-        // Redirect to dashboard or home
+        localStorage.setItem('username', username);
+        // Redirect to dashboard
         navigate('/dashboard');
       } else {
-        setError(data.message || 'Invalid credentials');
+        setError('Invalid username or password');
       }
-    } catch (err) {
-      setError('Connection error. Please try again.');
-    } finally {
       setLoading(false);
-    }
+    }, 500);
   };
 
   return (
@@ -59,6 +50,7 @@ const Login = () => {
           <form className="login-form" onSubmit={handleSubmit}>
             <h2>Login</h2>
             {error && <div className="error-message">{error}</div>}
+            
             <input 
               type="text" 
               name="username" 

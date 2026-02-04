@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import LibraryAdminDashboard from './components/LibraryAdminDashboard';
-import Login from '../components/Login';
+import Login from './components/LogIn';
 
 function FileUploadPage() {
   const [file, setFile] = useState(null);
