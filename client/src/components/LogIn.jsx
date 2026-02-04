@@ -1,13 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './LogIn.css';
 import mapuaLogo from '../assets/Mapua Logo.png';
 import nameLogo from '../assets/Name Logo.png';
 
 const Login = () => {
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your login logic here
-    console.log('Login submitted');
+    setError('');
+    setLoading(true);
+
+    try {
+      // Replace with your actual API endpoint
+      const res = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // Store authentication token/status
+        localStorage.setItem('isAuthenticated', 'true');
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
+        // Redirect to dashboard or home
+        navigate('/dashboard');
+      } else {
+        setError(data.message || 'Invalid credentials');
+      }
+    } catch (err) {
+      setError('Connection error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -22,9 +58,26 @@ const Login = () => {
         <div className="right-pane">
           <form className="login-form" onSubmit={handleSubmit}>
             <h2>Login</h2>
-            <input type="text" name="username" placeholder="Username" required />
-            <input type="password" name="password" placeholder="Password" required />
-            <button type="submit">Login</button>
+            {error && <div className="error-message">{error}</div>}
+            <input 
+              type="text" 
+              name="username" 
+              placeholder="Username" 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required 
+            />
+            <input 
+              type="password" 
+              name="password" 
+              placeholder="Password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required 
+            />
+            <button type="submit" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
           </form>
         </div>
       </div>

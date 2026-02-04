@@ -112,3 +112,17 @@
   .mapua-logo { max-width: 140px; }
   .name-logo { max-width: 180px; }
 }
+
+.error-message {
+  background-color: #fee;
+  color: #c33;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
