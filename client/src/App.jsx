@@ -78,9 +78,11 @@ function ProtectedRoute({ children }) {
 
 export default function App() {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('currentUser');
     window.location.href = '/login';
   };
 
@@ -94,6 +96,9 @@ export default function App() {
             </li>
             <li>
               <Link to="/dashboard">Dashboard</Link>
+            </li>
+            <li>
+              <span>Welcome, {currentUser.username} ({currentUser.role})</span>
             </li>
             <li>
               <button onClick={handleLogout}>Logout</button>
