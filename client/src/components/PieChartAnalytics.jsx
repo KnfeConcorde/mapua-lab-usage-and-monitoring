@@ -26,11 +26,26 @@ const MONTHS = [
   'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'
 ]
 
+// Updated to use 24-hour format to match backend
 const TIME_GROUPS = {
   Morning: ['7:00-8:00', '8:00-9:00', '9:00-10:00', '10:00-11:00'],
-  Midday: ['11:00-12:00', '12:00-1:00', '1:00-2:00'],
-  Afternoon: ['2:00-3:00', '3:00-4:00', '4:00-5:00', '5:00-6:00'],
-  Evening: ['6:00-7:00', '7:00-8:00', '8:00-9:00']
+  Midday: ['11:00-12:00', '12:00-13:00', '13:00-14:00'],
+  Afternoon: ['14:00-15:00', '15:00-16:00', '16:00-17:00', '17:00-18:00'],
+  Evening: ['18:00-19:00', '19:00-20:00', '20:00-21:00', '21:00-22:00']
+}
+
+// Helper function to convert 24h time to 12h AM/PM format
+function formatTimeTo12Hour(time24) {
+  const [start, end] = time24.split('-');
+  
+  const formatHour = (hourStr) => {
+    const hour = parseInt(hourStr.split(':')[0]);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
+    return `${displayHour}:00 ${period}`;
+  };
+  
+  return `${formatHour(start)} - ${formatHour(end)}`;
 }
 
 export default function PieChartAnalytics() {
@@ -40,14 +55,20 @@ export default function PieChartAnalytics() {
   useEffect(() => {
     fetch('http://localhost:5000/api/dashboard/analytics')
       .then(res => res.json())
-      .then(setAnalytics)
+      .then(data => {
+        console.log('Analytics data:', data);
+        setAnalytics(data);
+      })
       .catch(console.error)
   }, [])
 
   useEffect(() => {
     fetch('http://localhost:5000/api/dashboard/time-usage')
       .then(res => res.json())
-      .then(setTimeUsage)
+      .then(data => {
+        console.log('Time usage data:', data);
+        setTimeUsage(data);
+      })
       .catch(console.error)
   }, [])
 
@@ -73,6 +94,8 @@ export default function PieChartAnalytics() {
       const total = timeUsage
         .filter(t => ranges.includes(t.time))
         .reduce((sum, t) => sum + t.total, 0)
+
+      console.log(`${group}: matched ${total} entries from ranges`, ranges);
 
       return {
         name: group,
@@ -107,6 +130,25 @@ export default function PieChartAnalytics() {
       color: '#f59e0b'
     }
   ]
+
+  // Custom tooltip to show time in 12-hour format
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0];
+      return (
+        <div style={{
+          backgroundColor: 'white',
+          padding: '10px',
+          border: '1px solid #ccc',
+          borderRadius: '4px'
+        }}>
+          <p style={{ margin: 0, fontWeight: 'bold' }}>{data.name}</p>
+          <p style={{ margin: '5px 0 0 0' }}>{data.value} visits</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="pie-chart-container">
@@ -149,7 +191,7 @@ export default function PieChartAnalytics() {
                 />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip content={<CustomTooltip />} />
             <Legend />
           </PieChart>
         </ResponsiveContainer>

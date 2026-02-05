@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { initDevUser, findUser, verifyPassword } from '../utils/auth';
 import './LogIn.css';
 import mapuaLogo from './assets/Mapua Logo.png';
 import nameLogo from './assets/Name Logo.png';
@@ -11,30 +12,48 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Hardcoded credentials for development
-  const DEV_CREDENTIALS = {
-    username: 'admin',
-    password: 'mapua@1925'
-  };
+  // Initialize development user on component mount
+  useEffect(() => {
+    initDevUser();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    // Simulate network delay
-    setTimeout(() => {
-      if (username === DEV_CREDENTIALS.username && password === DEV_CREDENTIALS.password) {
-        // Store authentication status
+    try {
+      // Find user in local storage
+      const user = findUser(username);
+      
+      if (!user) {
+        setError('Invalid username or password');
+        setLoading(false);
+        return;
+      }
+
+      // Verify password against hash
+      const isValid = await verifyPassword(password, user.passwordHash);
+      
+      if (isValid) {
+        // Store authentication status and user info
         localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('username', username);
+        localStorage.setItem('currentUser', JSON.stringify({
+          username: user.username,
+          role: user.role
+        }));
+        
         // Redirect to dashboard
         navigate('/dashboard');
       } else {
         setError('Invalid username or password');
       }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+      console.error('Login error:', err);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   return (
@@ -58,6 +77,7 @@ const Login = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required 
+              autoComplete="username"
             />
             <input 
               type="password" 
@@ -66,6 +86,7 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required 
+              autoComplete="current-password"
             />
             <button type="submit" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
