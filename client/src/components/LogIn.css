@@ -1,128 +1,160 @@
-/* Full-page wrapper - set background here (you can change to an image or gradient) */
-.login-container {
-  min-height: 100vh;
+/* 1. Global Reset: This removes the "White Border" from the edges */
+html, body, #root {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Prevents side-scrolling */
+}
+
+/* 2. Viewport Setup */
+.viewport {
+  height: 100vh;
+  width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f5f7fb; /* change or override this for a custom background */
-  padding: 24px;
-  font-family: Arial, sans-serif;
+  /* Use 'fixed' to ensure the background stays pinned while the card is centered */
+  background: url('./assets/_img_3.jpg') no-repeat center center/cover fixed;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
 }
 
-/* Centered two-pane card */
-.login-box {
+.login-card {
   display: flex;
   width: 900px;
-  max-width: 96%;
-  height: 520px;
-  background: rgba(255,255,255,0.95);
-  border-radius: 12px;
+  height: 550px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
 }
 
-/* Left pane - logos stacked vertically */
-.left-pane {
-  width: 45%;
-  background: linear-gradient(180deg, #ffffff, #f0f4ff);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-
-.logo-stack {
+.panel {
+  flex: 1;
+  padding: 40px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
 }
 
-.mapua-logo {
-  max-width: 160px;
-  width: 100%;
-  height: auto;
-  display: block;
+/* Left Panel (Black Transparent) */
+.left-panel {
+  background: rgba(26, 26, 26, 0.9);
+  color: white;
 }
 
-.name-logo {
-  max-width: 220px;
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Right pane - login form */
-.right-pane {
-  width: 55%;
+.logo-section {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 36px;
+  justify-content: center; /* Centers horizontally */
+  align-items: center;     /* Centers vertically */
+  width: 100%;             /* Ensures it spans the full width of the left panel */
+  margin-bottom: 50px;     /* Space before the form starts */
+}
+
+.logo-section .main-logo {
+  width: 250px;            /* Your desired size */
+  height: auto;
 }
 
 .login-form {
-  width: 100%;
-  max-width: 360px;
-  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.login-form h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #222;
-}
-
-.login-form input {
-  width: 100%;
+.styled-input {
+  background: transparent;
+  border: 1px solid #444;
   padding: 12px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 15px;
+  color: white;
+  font-size: 14px;
+  outline: none;
 }
 
-.login-form button {
-  width: 100%;
-  padding: 12px;
-  background-color: #007bff;
+.styled-input::placeholder {
+  color: #888;
+}
+
+.action-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 10px;
+}
+
+.signin-btn {
+  background-color: #ff3131;
   color: white;
   border: none;
-  border-radius: 6px;
+  padding: 10px 25px;
+  font-weight: bold;
   cursor: pointer;
   font-size: 16px;
+  transition: background 0.3s;
+}
+
+.signin-btn:hover {
+  background-color: #d12727;
+}
+
+.account-text {
+  text-align: right;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* Footer Section */
+.footer-section {
+  margin-top: auto;
+  text-align: center;
+  font-size: 11px;
+  color: #777;
+}
+
+.footer-links {
   margin-top: 8px;
 }
 
-.login-form button:hover {
-  background-color: #0056b3;
+.footer-links a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 5px;
 }
 
-/* Responsive: stack panes on small screens */
-@media (max-width: 768px) {
-  .login-box {
-    flex-direction: column;
-    height: auto;
-  }
-  .left-pane, .right-pane {
-    width: 100%;
-    padding: 28px 18px;
-  }
-  .mapua-logo { max-width: 140px; }
-  .name-logo { max-width: 180px; }
+.footer-links span {
+  color: #444;
 }
 
-.error-message {
-  background-color: #fee;
-  color: #c33;
+/* Right Panel (Red Transparent) */
+.right-panel {
+  background: rgba(255, 49, 49, 0.85);
+  color: white;
+}
+
+.header-text {
+  font-size: 28px;
+  color: #ffcc00; /* Mapua Gold/Yellow */
+  margin-bottom: 30px;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+.bars-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.news-bar {
+  background: rgba(255, 245, 245, 0.95);
+  height: 45px;
+  width: 100%;
+}
+
+.error-box {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid #ff3131;
   padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 15px;
-  font-size: 14px;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  font-size: 13px;
+  margin-bottom: 10px;
+  color: #ffbaba;
 }
