@@ -1,0 +1,297 @@
+/* Sidebar Styles */
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  background: #f5f5f7;
+  color: #1f2937;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.08);
+  transition: width 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.sidebar.dark-mode {
+  background: linear-gradient(135deg, #0f172a 0%, #1a2942 100%);
+  color: white;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar.collapsed {
+  width: 80px;
+}
+
+/* Top Logo Section - Stacked Logos */
+.sidebar-top {
+  padding: 1.5rem 0.75rem;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sidebar.dark-mode .sidebar-top {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.logos-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.mapua-logo,
+.name-logo {
+  max-width: 90%;
+  height: auto;
+  object-fit: contain;
+  transition: all 0.3s ease;
+}
+
+.mapua-logo {
+  max-height: 60px;
+}
+
+.name-logo {
+  max-height: 45px;
+}
+
+.sidebar.collapsed .mapua-logo,
+.sidebar.collapsed .name-logo {
+  max-width: 70%;
+}
+
+.sidebar.dark-mode .mapua-logo,
+.sidebar.dark-mode .name-logo {
+  filter: brightness(1.1);
+}
+
+/* Navigation Section */
+.sidebar-nav {
+  flex: 1;
+  padding: 1rem 0;
+  overflow-y: auto;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-nav li {
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  display: flex;
+}
+
+.nav-link,
+.logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: 0.75rem 0.9rem;
+  text-decoration: none;
+  color: #4b5563;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.sidebar.expanded .nav-link,
+.sidebar.expanded .logout-button {
+  justify-content: flex-start;
+}
+
+.nav-link:hover,
+.logout-button:hover {
+  background-color: rgba(30, 64, 175, 0.1);
+  color: #1f2937;
+}
+
+.sidebar.dark-mode .nav-link:hover,
+.sidebar.dark-mode .logout-button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.nav-link.active {
+  background-color: rgba(30, 64, 175, 0.15);
+  color: #1e40af;
+  font-weight: 600;
+}
+
+.sidebar.dark-mode .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: white;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  min-width: 24px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.nav-text,
+.logout-text {
+  white-space: nowrap;
+}
+
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed .logout-text {
+  display: none;
+}
+
+/* Logout Button Specific */
+.logout-button {
+  color: #ef4444;
+  margin-top: auto;
+  margin-bottom: 0;
+}
+
+.logout-button:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.sidebar.dark-mode .logout-button {
+  color: #fca5a5;
+}
+
+.sidebar.dark-mode .logout-button:hover {
+  background-color: rgba(220, 38, 38, 0.2);
+  color: #fecaca;
+}
+
+.logout-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* Bottom Section */
+.sidebar-bottom {
+  padding: 0.75rem 0.75rem;
+  border-top: 2px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.sidebar.dark-mode .sidebar-bottom {
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Toggle Sidebar Button */
+.toggle-sidebar-btn {
+  padding: 0.6rem;
+  background-color: rgba(30, 64, 175, 0.1);
+  border: 1px solid rgba(30, 64, 175, 0.2);
+  border-radius: 6px;
+  color: #1e40af;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  width: 100%;
+  font-weight: 600;
+}
+
+.toggle-sidebar-btn:hover {
+  background-color: rgba(30, 64, 175, 0.2);
+  border-color: rgba(30, 64, 175, 0.4);
+}
+
+.sidebar.dark-mode .toggle-sidebar-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.sidebar.dark-mode .toggle-sidebar-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.toggle-icon {
+  font-size: 0.8rem;
+}
+
+/* Scrollbar Styling */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.sidebar.dark-mode::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar.dark-mode::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar.dark-mode::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 80px;
+  }
+
+  .sidebar.expanded {
+    width: 260px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 999;
+  }
+
+  .sidebar-nav ul {
+    padding: 0;
+  }
+
+  .nav-link,
+  .logout-button {
+    padding: 0.75rem;
+  }
+
+  .sidebar.expanded .nav-link,
+  .sidebar.expanded .logout-button {
+    padding: 0.9rem 1rem;
+  }
+}
